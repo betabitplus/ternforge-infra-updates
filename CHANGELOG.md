@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.1...v0.1.2) (2026-08-08)
+
+
+### Bug Fixes
+
+* preserve Vendir-owned snapshots ([#8](https://github.com/betabitplus/ternforge-infra-updates/issues/8)) ([760a23a](https://github.com/betabitplus/ternforge-infra-updates/commit/760a23abfc91f39f37694b1e0eee68e7c9d8baef))
+
 ## [0.1.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.0...v0.1.1) (2026-08-08)
 
 
