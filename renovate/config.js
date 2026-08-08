@@ -7,6 +7,7 @@ module.exports = {
   dependencyDashboard: false,
   vulnerabilityAlerts: { enabled: false },
   printConfig: false,
+  ignorePaths: ["**/_components/**"],
   enabledManagers: ["copier", "github-actions", "pep621", "renovate-config", "vendir"],
   semanticCommits: "enabled",
   automerge: false,
