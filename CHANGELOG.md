@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.0...v0.1.1) (2026-08-08)
+
+
+### Bug Fixes
+
+* disable Renovate vulnerability alerts ([#6](https://github.com/betabitplus/ternforge-infra-updates/issues/6)) ([2329d2e](https://github.com/betabitplus/ternforge-infra-updates/commit/2329d2e1bc76ffcf5c752ee07c032b20b8109934))
+
 ## 0.1.0 (2026-08-08)
 
 
