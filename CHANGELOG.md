@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.2...v0.1.3) (2026-08-08)
+
+
+### Bug Fixes
+
+* release Vendir product updates ([#11](https://github.com/betabitplus/ternforge-infra-updates/issues/11)) ([44e81ff](https://github.com/betabitplus/ternforge-infra-updates/commit/44e81ff5158fc4ffb4f34a98c672d33d0dd1d045))
+
 ## [0.1.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.1...v0.1.2) (2026-08-08)
 
 
