@@ -41,21 +41,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Resolve current inventory commit
-        id: inventory-ref
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          inventory_sha="$(gh api repos/betabitplus/ternforge-infra-repository-control/commits/main --jq '.sha')"
-          [[ "$inventory_sha" =~ ^[0-9a-f]{40}$ ]]
-          printf 'sha=%s\n' "$inventory_sha" >> "$GITHUB_OUTPUT"
-
-      - name: Check out inventory at resolved commit
+      - name: Check out current inventory
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: betabitplus/ternforge-infra-repository-control
-          ref: ${{ steps.inventory-ref.outputs.sha }}
+          ref: main
           path: .inventory
           persist-credentials: false
 
@@ -63,6 +53,8 @@ jobs:
         id: fleet
         run: |
           set -euo pipefail
+          inventory_sha="$(git -C .inventory rev-parse HEAD)"
+          [[ "$inventory_sha" =~ ^[0-9a-f]{40}$ ]]
           inventory=.inventory/fleet.auto.tfvars.json
           test -s "$inventory"
           jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
@@ -76,6 +68,7 @@ jobs:
           repositories_json="$(jq -c '[.repositories[].repository]' "$inventory")"
           repository_count="$(jq '.repositories | length' "$inventory")"
           {
+            printf 'inventory_sha=%s\n' "$inventory_sha"
             printf 'repositories_json=%s\n' "$repositories_json"
             printf 'repository_count=%s\n' "$repository_count"
             printf 'repository_names<<EOF\n'
@@ -119,7 +112,7 @@ jobs:
       - name: Record native execution evidence
         if: always()
         env:
-          INVENTORY_SHA: ${{ steps.inventory-ref.outputs.sha }}
+          INVENTORY_SHA: ${{ steps.fleet.outputs.inventory_sha }}
           QUEUE_SECONDS: ${{ steps.timing.outputs.queue_seconds }}
           REPOSITORY_COUNT: ${{ steps.fleet.outputs.repository_count }}
           SOURCE_REPOSITORY: ${{ github.event.client_payload.source_repository }}
