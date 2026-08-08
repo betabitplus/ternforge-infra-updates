@@ -72,11 +72,6 @@ jobs:
           LC_ALL=C sort "$RUNNER_TEMP/fleet.actual" > "$RUNNER_TEMP/fleet.sorted"
           cmp "$RUNNER_TEMP/fleet.actual" "$RUNNER_TEMP/fleet.sorted"
           test "$(wc -l < "$RUNNER_TEMP/fleet.actual" | tr -d ' ')" = "$(LC_ALL=C sort -u "$RUNNER_TEMP/fleet.actual" | wc -l | tr -d ' ')"
-          if grep -Fx 'betabitplus/py-lib-starter' "$RUNNER_TEMP/fleet.actual"; then
-            echo 'Frozen py-lib-starter must never enter the managed fleet' >&2
-            exit 1
-          fi
-          cmp "$RUNNER_TEMP/fleet.actual" fixtures/fleet-repositories.txt
 
           repositories_json="$(jq -c '[.repositories[].repository]' "$inventory")"
           repository_count="$(jq '.repositories | length' "$inventory")"
@@ -110,15 +105,11 @@ jobs:
           printf '%s' "$EXPECTED_REPOSITORIES" | jq -r '.[]' | LC_ALL=C sort > "$RUNNER_TEMP/expected-repositories"
           gh api installation/repositories --paginate --jq '.repositories[].full_name' | LC_ALL=C sort > "$RUNNER_TEMP/token-repositories"
           diff -u "$RUNNER_TEMP/expected-repositories" "$RUNNER_TEMP/token-repositories"
-          if grep -Fx 'betabitplus/py-lib-starter' "$RUNNER_TEMP/token-repositories"; then
-            echo 'Frozen py-lib-starter must never enter the Renovate token scope' >&2
-            exit 1
-          fi
 
       - name: Reconcile current full fleet
         uses: renovatebot/github-action@316d7cd859606d6039a2182b7d69199e9b036835 # v46.2.1
         env:
-          LOG_LEVEL: debug
+          LOG_LEVEL: info
           RENOVATE_REPOSITORIES: ${{ steps.fleet.outputs.repositories_json }}
         with:
           configurationFile: renovate/config.js

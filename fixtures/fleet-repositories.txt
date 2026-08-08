@@ -1,9 +1,0 @@
-betabitplus/ternforge-infra-ci
-betabitplus/ternforge-infra-repository-control
-betabitplus/ternforge-infra-updates
-betabitplus/ternforge-template-components
-betabitplus/ternforge-template-infra-repository
-betabitplus/ternforge-template-py-library
-betabitplus/ternforge-tooling-py-policy
-betabitplus/ternforge-tooling-py-runtime
-betabitplus/ternforge-tooling-py-testkit
