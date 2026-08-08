@@ -1,0 +1,157 @@
+name: full-fleet updates
+
+on:
+  repository_dispatch:
+    types: [ternforge-release]
+  schedule:
+    # The official :maintainLockFilesMonthly preset allows the first day of the
+    # month before 04:00 UTC. This nightly run therefore enters that window.
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    name: reconcile full fleet
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Capture queue timing
+        id: timing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          started_epoch="$(date -u +%s)"
+          created_at="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" --jq '.created_at')"
+          created_epoch="$(date -u -d "$created_at" +%s)"
+          queue_seconds="$((started_epoch - created_epoch))"
+          test "$queue_seconds" -ge 0
+          printf 'started_epoch=%s\n' "$started_epoch" >> "$GITHUB_OUTPUT"
+          printf 'queue_seconds=%s\n' "$queue_seconds" >> "$GITHUB_OUTPUT"
+
+      - name: Check out update configuration
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Resolve current inventory commit
+        id: inventory-ref
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          inventory_sha="$(gh api repos/betabitplus/ternforge-infra-repository-control/commits/main --jq '.sha')"
+          [[ "$inventory_sha" =~ ^[0-9a-f]{40}$ ]]
+          printf 'sha=%s\n' "$inventory_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out inventory at resolved commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: betabitplus/ternforge-infra-repository-control
+          ref: ${{ steps.inventory-ref.outputs.sha }}
+          path: .inventory
+          persist-credentials: false
+
+      - name: Validate and export exact managed fleet
+        id: fleet
+        run: |
+          set -euo pipefail
+          inventory=.inventory/fleet.auto.tfvars.json
+          test -s "$inventory"
+          jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
+          jq -e 'all(.repositories[]; (.repository | type == "string") and test("^betabitplus/ternforge-[a-z0-9-]+$"))' "$inventory" >/dev/null
+
+          jq -r '.repositories[].repository' "$inventory" > "$RUNNER_TEMP/fleet.actual"
+          LC_ALL=C sort "$RUNNER_TEMP/fleet.actual" > "$RUNNER_TEMP/fleet.sorted"
+          cmp "$RUNNER_TEMP/fleet.actual" "$RUNNER_TEMP/fleet.sorted"
+          test "$(wc -l < "$RUNNER_TEMP/fleet.actual" | tr -d ' ')" = "$(LC_ALL=C sort -u "$RUNNER_TEMP/fleet.actual" | wc -l | tr -d ' ')"
+          if grep -Fx 'betabitplus/py-lib-starter' "$RUNNER_TEMP/fleet.actual"; then
+            echo 'Frozen py-lib-starter must never enter the managed fleet' >&2
+            exit 1
+          fi
+          cmp "$RUNNER_TEMP/fleet.actual" fixtures/fleet-repositories.txt
+
+          repositories_json="$(jq -c '[.repositories[].repository]' "$inventory")"
+          repository_count="$(jq '.repositories | length' "$inventory")"
+          {
+            printf 'repositories_json=%s\n' "$repositories_json"
+            printf 'repository_count=%s\n' "$repository_count"
+            printf 'repository_names<<EOF\n'
+            jq -r '.repositories[].repository | split("/")[1]' "$inventory"
+            printf 'EOF\n'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create exact-fleet Renovate token
+        id: renovate-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.TERNFORGE_RENOVATE_CLIENT_ID }}
+          private-key: ${{ secrets.TERNFORGE_RENOVATE_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ steps.fleet.outputs.repository_names }}
+          permission-contents: write
+          permission-pull-requests: write
+          permission-issues: write
+          permission-workflows: write
+
+      - name: Verify exact Renovate token repository set
+        env:
+          EXPECTED_REPOSITORIES: ${{ steps.fleet.outputs.repositories_json }}
+          GH_TOKEN: ${{ steps.renovate-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$EXPECTED_REPOSITORIES" | jq -r '.[]' | LC_ALL=C sort > "$RUNNER_TEMP/expected-repositories"
+          gh api installation/repositories --paginate --jq '.repositories[].full_name' | LC_ALL=C sort > "$RUNNER_TEMP/token-repositories"
+          diff -u "$RUNNER_TEMP/expected-repositories" "$RUNNER_TEMP/token-repositories"
+          if grep -Fx 'betabitplus/py-lib-starter' "$RUNNER_TEMP/token-repositories"; then
+            echo 'Frozen py-lib-starter must never enter the Renovate token scope' >&2
+            exit 1
+          fi
+
+      - name: Reconcile current full fleet
+        uses: renovatebot/github-action@316d7cd859606d6039a2182b7d69199e9b036835 # v46.2.1
+        env:
+          LOG_LEVEL: debug
+          RENOVATE_REPOSITORIES: ${{ steps.fleet.outputs.repositories_json }}
+        with:
+          configurationFile: renovate/config.js
+          token: ${{ steps.renovate-token.outputs.token }}
+          renovate-version: 44.7.2
+
+      - name: Record native execution evidence
+        if: always()
+        env:
+          INVENTORY_SHA: ${{ steps.inventory-ref.outputs.sha }}
+          QUEUE_SECONDS: ${{ steps.timing.outputs.queue_seconds }}
+          REPOSITORY_COUNT: ${{ steps.fleet.outputs.repository_count }}
+          SOURCE_REPOSITORY: ${{ github.event.client_payload.source_repository }}
+          SOURCE_REF: ${{ github.event.client_payload.source_ref }}
+          SOURCE_SHA: ${{ github.event.client_payload.source_sha }}
+          STARTED_EPOCH: ${{ steps.timing.outputs.started_epoch }}
+        run: |
+          set -euo pipefail
+          finished_epoch="$(date -u +%s)"
+          total_seconds="$((finished_epoch - STARTED_EPOCH))"
+          {
+            echo '## Full-fleet reconciliation evidence'
+            echo
+            echo '| Field | Value |'
+            echo '|---|---|'
+            printf '| Trigger | %s |\n' "$GITHUB_EVENT_NAME"
+            printf '| Inventory commit | %s |\n' "${INVENTORY_SHA:-unresolved}"
+            printf '| Managed repositories | %s |\n' "${REPOSITORY_COUNT:-unknown}"
+            printf '| Queue seconds | %s |\n' "${QUEUE_SECONDS:-unknown}"
+            printf '| Total job seconds | %s |\n' "$total_seconds"
+            printf '| Audit source repository | %s |\n' "${SOURCE_REPOSITORY:-n/a}"
+            printf '| Audit source ref | %s |\n' "${SOURCE_REF:-n/a}"
+            printf '| Audit source SHA | %s |\n' "${SOURCE_SHA:-n/a}"
+            echo
+            echo 'Per-repository Renovate timings remain in the native Renovate step log.'
+          } >> "$GITHUB_STEP_SUMMARY"

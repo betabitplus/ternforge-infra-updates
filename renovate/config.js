@@ -1,0 +1,19 @@
+module.exports = {
+  platform: "github",
+  autodiscover: false,
+  onboarding: false,
+  requireConfig: "optional",
+  allowScripts: false,
+  dependencyDashboard: false,
+  printConfig: false,
+  enabledManagers: ["copier", "github-actions", "pep621", "renovate-config", "vendir"],
+  semanticCommits: "enabled",
+  automerge: false,
+  prCreation: "immediate",
+  prHourlyLimit: 0,
+  constraints: {
+    copier: "9.17.0",
+    vendir: "0.46.0",
+  },
+  gitAuthor: "Ternforge Renovate <8123085+betabitplus@users.noreply.github.com>",
+};
