@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.3...v0.1.4) (2026-08-08)
+
+
+### Bug Fixes
+
+* simplify Renovate update policy ([#15](https://github.com/betabitplus/ternforge-infra-updates/issues/15)) ([8460971](https://github.com/betabitplus/ternforge-infra-updates/commit/846097144c296840bd6a08a2c1962275b321425e))
+
 ## [0.1.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.2...v0.1.3) (2026-08-08)
 
 
