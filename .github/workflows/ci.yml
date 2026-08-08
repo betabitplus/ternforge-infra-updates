@@ -14,7 +14,7 @@ jobs:
   required:
     name: ci / required
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Validate pull request title
         if: github.event_name == 'pull_request'
@@ -39,9 +39,50 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Validate workflows with actionlint
+        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+
+      - name: Validate Renovate configuration
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -v "$PWD:/repo" \
+            -w /repo \
+            ghcr.io/renovatebot/renovate:44.7.2 \
+            renovate-config-validator --strict \
+            renovate/config.js presets/python-library.json5
+
+      - name: Validate current fleet fixture
+        run: |
+          set -euo pipefail
+          inventory_sha="$(curl --fail --location --silent --show-error \
+            https://api.github.com/repos/betabitplus/ternforge-infra-repository-control/commits/main \
+            | jq -r '.sha')"
+          [[ "$inventory_sha" =~ ^[0-9a-f]{40}$ ]]
+          curl --fail --location --silent --show-error \
+            "https://raw.githubusercontent.com/betabitplus/ternforge-infra-repository-control/${inventory_sha}/fleet.auto.tfvars.json" \
+            --output "$RUNNER_TEMP/fleet.auto.tfvars.json"
+
+          inventory="$RUNNER_TEMP/fleet.auto.tfvars.json"
+          jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
+          jq -e 'all(.repositories[]; ((.repository | type) == "string") and (.repository | test("^betabitplus/ternforge-[a-z0-9-]+$")))' "$inventory" >/dev/null
+          jq -r '.repositories[].repository' "$inventory" > "$RUNNER_TEMP/fleet.actual"
+          LC_ALL=C sort "$RUNNER_TEMP/fleet.actual" > "$RUNNER_TEMP/fleet.sorted"
+          cmp "$RUNNER_TEMP/fleet.actual" "$RUNNER_TEMP/fleet.sorted"
+          test "$(wc -l < "$RUNNER_TEMP/fleet.actual" | tr -d ' ')" = "$(LC_ALL=C sort -u "$RUNNER_TEMP/fleet.actual" | wc -l | tr -d ' ')"
+          if grep -Fx 'betabitplus/py-lib-starter' "$RUNNER_TEMP/fleet.actual"; then
+            echo 'Frozen py-lib-starter must never enter the managed fleet' >&2
+            exit 1
+          fi
+          cmp "$RUNNER_TEMP/fleet.actual" fixtures/fleet-repositories.txt
+
       - name: Verify repository files
         run: |
           set -euo pipefail
           git diff --check
+          node --check renovate/config.js
+          python -m json.tool release-please-config.json >/dev/null
+          python -m json.tool .release-please-manifest.json >/dev/null
           test -s .copier-answers.yml
           test -s README.md
+          test -s presets/python-library.json5
