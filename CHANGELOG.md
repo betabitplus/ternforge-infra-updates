@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.4...v0.1.5) (2026-08-08)
+
+
+### Bug Fixes
+
+* simplify release and inventory plumbing ([#18](https://github.com/betabitplus/ternforge-infra-updates/issues/18)) ([102ccfa](https://github.com/betabitplus/ternforge-infra-updates/commit/102ccfa71a6b99bdbe42298d3a59d650734a75b7))
+
 ## [0.1.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.3...v0.1.4) (2026-08-08)
 
 
