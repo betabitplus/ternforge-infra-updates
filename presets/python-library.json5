@@ -1,23 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [":maintainLockFilesMonthly"],
-  "enabledManagers": ["copier", "github-actions", "pep621", "renovate-config", "vendir"],
-  "semanticCommits": "enabled",
-  "automerge": false,
-  "platformAutomerge": true,
-  "prCreation": "immediate",
-  "prHourlyLimit": 0,
-  "rebaseWhen": "conflicted",
-  "constraints": {
-    "copier": "9.17.0",
-    "vendir": "0.46.0"
-  },
   "packageRules": [
-    {
-      "description": "Keep Copier and Vendir updates manual",
-      "matchManagers": ["copier", "vendir"],
-      "automerge": false
-    },
     {
       "description": "Group Ternforge Python tooling Git dependencies",
       "matchManagers": ["pep621"],
@@ -42,28 +26,7 @@
       "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
       "matchCurrentVersion": "!/^0/",
       "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true,
-      "automergeType": "pr",
-      "platformAutomerge": true
-    },
-    {
-      "description": "Pre-1.0 tooling updates stay manual",
-      "matchManagers": ["pep621"],
-      "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
-      "matchCurrentVersion": "/^0/",
-      "automerge": false
-    },
-    {
-      "description": "Major tooling updates stay manual",
-      "matchManagers": ["pep621"],
-      "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
-      "matchUpdateTypes": ["major"],
-      "automerge": false
-    },
-    {
-      "description": "GitHub Actions updates stay reviewable",
-      "matchManagers": ["github-actions"],
-      "automerge": false
+      "automerge": true
     }
   ]
 }

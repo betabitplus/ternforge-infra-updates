@@ -67,8 +67,9 @@ not use `copier recopy`, patch artifacts or a second ownership manifest.
 
 ## Validation
 
-Pull requests run `actionlint`, strict Renovate configuration validation, the
-exact current fleet fixture check and basic repository-file validation. Native
-Renovate logs remain the source for per-repository timings; the workflow Job
-Summary records queue time, total job time, inventory commit and release audit
-identity.
+Pull requests run `actionlint`, strict Renovate configuration validation and
+basic repository-file validation. Inventory validation and exact token-scope
+readback happen in the reconciliation workflow against the authoritative
+repository-control inventory. Native Renovate logs remain the source for
+per-repository timings; the workflow Job Summary records queue time, total job
+time, inventory commit and release audit identity.
