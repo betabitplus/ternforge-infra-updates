@@ -3,7 +3,8 @@
   "packages": {
     ".": {
       "release-type": "simple",
-      "package-name": "ternforge-infra-updates"
+      "package-name": "ternforge-infra-updates",
+      "initial-version": "0.1.0"
     }
   }
 }
