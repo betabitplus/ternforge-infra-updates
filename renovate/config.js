@@ -17,5 +17,13 @@ module.exports = {
     copier: "9.17.0",
     vendir: "0.46.0",
   },
+  packageRules: [
+    {
+      description: "Released component snapshots change generated products",
+      matchManagers: ["vendir"],
+      semanticCommitType: "fix",
+      automerge: false,
+    },
+  ],
   gitAuthor: "Ternforge Renovate <8123085+betabitplus@users.noreply.github.com>",
 };
