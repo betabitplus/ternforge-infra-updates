@@ -5,6 +5,7 @@ module.exports = {
   requireConfig: "optional",
   allowScripts: false,
   dependencyDashboard: false,
+  vulnerabilityAlerts: { enabled: false },
   printConfig: false,
   enabledManagers: ["copier", "github-actions", "pep621", "renovate-config", "vendir"],
   semanticCommits: "enabled",
