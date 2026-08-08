@@ -65,7 +65,7 @@ jobs:
 
           inventory="$RUNNER_TEMP/fleet.auto.tfvars.json"
           jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
-          jq -e 'all(.repositories[]; (.repository | type == "string") and test("^betabitplus/ternforge-[a-z0-9-]+$"))' "$inventory" >/dev/null
+          jq -e 'all(.repositories[]; ((.repository | type) == "string") and (.repository | test("^betabitplus/ternforge-[a-z0-9-]+$")))' "$inventory" >/dev/null
           jq -r '.repositories[].repository' "$inventory" > "$RUNNER_TEMP/fleet.actual"
           LC_ALL=C sort "$RUNNER_TEMP/fleet.actual" > "$RUNNER_TEMP/fleet.sorted"
           cmp "$RUNNER_TEMP/fleet.actual" "$RUNNER_TEMP/fleet.sorted"
