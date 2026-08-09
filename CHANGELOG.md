@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.5...v0.1.6) (2026-08-09)
+
+
+### Bug Fixes
+
+* protect Renovate credentials ([#22](https://github.com/betabitplus/ternforge-infra-updates/issues/22)) ([5d9a293](https://github.com/betabitplus/ternforge-infra-updates/commit/5d9a29348136a8692ccf8948dc2a1de397d8a694))
+
 ## [0.1.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.4...v0.1.5) (2026-08-08)
 
 
