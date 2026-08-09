@@ -79,6 +79,14 @@ jobs:
         run: |
           set -euo pipefail
           scalr -format=json get-workspace -workspace="$SCALR_WORKSPACE_ID" > workspace.json
+          jq '{
+            execution_mode: ."execution-mode",
+            operations,
+            remote_backend: ."remote-backend",
+            iac_platform: ."iac-platform",
+            terraform_version: ."terraform-version",
+            vcs_repo: ."vcs-repo"
+          }' workspace.json
           jq -e '
             ."execution-mode" == "local" and
             .operations == false and
@@ -185,6 +193,14 @@ jobs:
         run: |
           set -euo pipefail
           scalr -format=json get-workspace -workspace="$SCALR_WORKSPACE_ID" > workspace.json
+          jq '{
+            execution_mode: ."execution-mode",
+            operations,
+            remote_backend: ."remote-backend",
+            iac_platform: ."iac-platform",
+            terraform_version: ."terraform-version",
+            vcs_repo: ."vcs-repo"
+          }' workspace.json
           jq -e '
             ."execution-mode" == "local" and
             .operations == false and
