@@ -50,6 +50,38 @@ repository needs lockfile work.
 - Private dependency credentials are not configured until a real private source
   exists.
 
+## Fleet Health
+
+The existing reconciliation job exports a bounded Fleet Health signal through one
+pinned ephemeral OpenTelemetry Collector. Workflow metrics cover delivery result,
+queue/processing duration, recovery freshness, exact fleet/token coverage and
+Renovate configuration warnings. Renovate traces are reduced to the already
+validated bounded span-metrics contract; traces themselves are not exported.
+Repository, branch, command, path, SHA and run-ID labels are not part of the
+persistent telemetry contract.
+
+Grafana Cloud configuration lives in `grafana/` and is applied only by the
+manual **fleet health grafana** workflow. It uses the same protected two-stage
+plan/review/apply pattern as repository control, but a separate Scalr state-only
+workspace and a separate OIDC service account. State, plans and plan JSON are
+sensitive and never become workflow artifacts.
+
+The Grafana GitHub data source uses the dedicated read-only
+`ternforge-fleet-health` GitHub App. It is a current-state/drill-down source for
+PRs, Renovate warnings and workflow runs; critical delivery alerts use the
+bounded workflow metrics instead. The dashboard overall state is the worst
+critical state, never a weighted score.
+
+Grafana credentials are deliberately split by responsibility:
+
+- the `grafana` environment holds the stack service-account token, exact-stack
+  plugin access-policy token, GitHub App data-source secret and alert contact;
+- the `renovate` environment holds only the exact-stack `metrics:write` token
+  plus the non-secret OTLP endpoint and numeric instance ID;
+- all permanent tokens have explicit expiry and are rotated by creating a
+  replacement, updating the corresponding protected environment secret, proving
+  plan/reconciliation health, then revoking the old token.
+
 ## Operator recovery
 
 Run the **full-fleet updates** workflow with `workflow_dispatch`. Recovery never

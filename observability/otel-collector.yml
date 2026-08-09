@@ -1,0 +1,66 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+connectors:
+  spanmetrics:
+    histogram:
+      explicit:
+        buckets: [100ms, 500ms, 1s, 2s, 5s, 10s, 20s, 30s, 60s, 120s, 300s]
+    dimensions:
+      - name: renovate.split
+    dimensions_cache_size: 1000
+    aggregation_temporality: AGGREGATION_TEMPORALITY_CUMULATIVE
+    exemplars:
+      enabled: false
+
+processors:
+  filter/spanmetrics:
+    error_mode: ignore
+    traces:
+      span:
+        - 'name != "run" and name != "repository" and attributes["renovate.split"] == nil'
+  transform/fleet-health-labels:
+    error_mode: propagate
+    metric_statements:
+      - context: datapoint
+        statements:
+          - 'set(attributes["ternforge.trigger"], resource.attributes["ternforge.trigger"]) where resource.attributes["ternforge.trigger"] != nil'
+  batch:
+    timeout: 1s
+
+exporters:
+  otlphttp/grafana:
+    endpoint: ${env:GRAFANA_OTLP_ENDPOINT}
+    auth:
+      authenticator: basicauth/grafana
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 5s
+      max_elapsed_time: 60s
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  basicauth/grafana:
+    client_auth:
+      username: ${env:GRAFANA_OTLP_USERNAME}
+      password: ${env:GRAFANA_OTLP_PASSWORD}
+
+service:
+  extensions: [health_check, basicauth/grafana]
+  telemetry:
+    logs:
+      level: warn
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [filter/spanmetrics, batch]
+      exporters: [spanmetrics]
+    metrics:
+      receivers: [otlp, spanmetrics]
+      processors: [transform/fleet-health-labels, batch]
+      exporters: [otlphttp/grafana]
