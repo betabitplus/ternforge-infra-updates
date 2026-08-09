@@ -134,10 +134,7 @@ jobs:
           set -euo pipefail
           tofu plan -input=false -out=fleet-health.plan
           tofu show -no-color fleet-health.plan > fleet-health-plan.txt
-          tofu show -json fleet-health.plan > fleet-health-plan.json
-          digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"])] | sort_by(.address)' \
-            fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
+          digest="$(sha256sum fleet-health-plan.txt | cut -d' ' -f1)"
           printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
           {
             echo '## Fleet Health Grafana plan'
@@ -147,7 +144,7 @@ jobs:
             cat fleet-health-plan.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          rm -f fleet-health.plan fleet-health-plan.txt fleet-health-plan.json
+          rm -f fleet-health.plan fleet-health-plan.txt
 
   apply:
     name: fleet health grafana / apply
@@ -248,16 +245,14 @@ jobs:
         run: |
           set -euo pipefail
           tofu plan -input=false -out=fleet-health.plan
-          tofu show -json fleet-health.plan > fleet-health-plan.json
-          digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"])] | sort_by(.address)' \
-            fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
+          tofu show -no-color fleet-health.plan > fleet-health-plan.txt
+          digest="$(sha256sum fleet-health-plan.txt | cut -d' ' -f1)"
           test "$digest" = "$REVIEWED_PLAN_DIGEST" || {
             printf 'Plan changed after review: reviewed=%s current=%s\n' "$REVIEWED_PLAN_DIGEST" "$digest" >&2
             exit 1
           }
           tofu apply -input=false fleet-health.plan
-          rm -f fleet-health.plan fleet-health-plan.json
+          rm -f fleet-health.plan fleet-health-plan.txt
 
       - name: Wait for GitHub data source readiness
         run: |
