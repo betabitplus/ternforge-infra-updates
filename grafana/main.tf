@@ -67,6 +67,10 @@ resource "grafana_cloud_plugin_installation" "github" {
 
   stack_slug = var.grafana_stack_slug
   slug       = "grafana-github-datasource"
+
+  lifecycle {
+    ignore_changes = [version]
+  }
 }
 
 resource "grafana_folder" "fleet_health" {
