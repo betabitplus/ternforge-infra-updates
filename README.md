@@ -41,8 +41,9 @@ repository needs lockfile work.
 ## Credentials
 
 - `TERNFORGE_RENOVATE_CLIENT_ID` is a repository variable owned by OpenTofu.
-- `TERNFORGE_RENOVATE_PRIVATE_KEY` exists only as the protected `renovate`
-  environment secret; runtime tokens are downscoped to the exact managed fleet.
+- `TERNFORGE_RENOVATE_PRIVATE_KEY` exists only as the `renovate` environment
+  secret; its custom deployment branch policy allows only `main`, and runtime
+  tokens are downscoped to the exact managed fleet.
 - Release wake-ups use a second short-lived token minted from the existing
   `ternforge-release` App and limited to exactly this repository; no separate
   Dispatch App exists.
