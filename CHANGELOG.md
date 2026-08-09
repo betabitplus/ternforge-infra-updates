@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.0](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.6...v0.2.0) (2026-08-09)
+
+
+### Features
+
+* add bounded fleet health observability ([#27](https://github.com/betabitplus/ternforge-infra-updates/issues/27)) ([d5a5468](https://github.com/betabitplus/ternforge-infra-updates/commit/d5a54681cc4322572e301cc133d039f63189fa19))
+
+
+### Bug Fixes
+
+* compare canonical Grafana plan changes ([#34](https://github.com/betabitplus/ternforge-infra-updates/issues/34)) ([f11c833](https://github.com/betabitplus/ternforge-infra-updates/commit/f11c8334f926ea1ba2810998e8bb27e39b6cc7ea))
+* compare Grafana resource actions ([#35](https://github.com/betabitplus/ternforge-infra-updates/issues/35)) ([30a2810](https://github.com/betabitplus/ternforge-infra-updates/commit/30a281039a2e4ef446f4ef19baca16f5be4255d2))
+* follow Grafana Cloud plugin latest ([#31](https://github.com/betabitplus/ternforge-infra-updates/issues/31)) ([c199cbc](https://github.com/betabitplus/ternforge-infra-updates/commit/c199cbce8ef8f662a62451a0b1fdd92d0b697067))
+* hash reviewed Grafana plan text ([#33](https://github.com/betabitplus/ternforge-infra-updates/issues/33)) ([3919beb](https://github.com/betabitplus/ternforge-infra-updates/commit/3919beb0a9df2bd28b5953290c1d4ce36c6b492a))
+* let Grafana Cloud own plugin versions ([#32](https://github.com/betabitplus/ternforge-infra-updates/issues/32)) ([dc4afdb](https://github.com/betabitplus/ternforge-infra-updates/commit/dc4afdb24d53119be2648b21adf48bb64a66cb98))
+
 ## [0.1.6](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.5...v0.1.6) (2026-08-09)
 
 
