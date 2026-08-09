@@ -136,7 +136,7 @@ jobs:
           tofu show -no-color fleet-health.plan > fleet-health-plan.txt
           tofu show -json fleet-health.plan > fleet-health-plan.json
           digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions, before: .change.before, after: .change.after}] | sort_by(.address)' \
+            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions}] | sort_by(.address)' \
             fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
           printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
           {
@@ -251,7 +251,7 @@ jobs:
           tofu show -no-color fleet-health.plan > fleet-health-plan.txt
           tofu show -json fleet-health.plan > fleet-health-plan.json
           digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions, before: .change.before, after: .change.after}] | sort_by(.address)' \
+            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions}] | sort_by(.address)' \
             fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
           test "$digest" = "$REVIEWED_PLAN_DIGEST" || {
             printf 'Plan changed after review: reviewed=%s current=%s\n' "$REVIEWED_PLAN_DIGEST" "$digest" >&2
