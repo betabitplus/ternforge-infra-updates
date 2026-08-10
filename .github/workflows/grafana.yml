@@ -24,14 +24,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: grafana
-    env:
-      GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
-      GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
-      GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
-      TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
-      TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
-      TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
-      TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
     outputs:
       plan_digest: ${{ steps.plan.outputs.digest }}
     steps:
@@ -114,6 +106,14 @@ jobs:
       - name: Create reviewable Grafana plan
         id: plan
         working-directory: grafana
+        env:
+          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
+          GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
+          GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
+          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
+          TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
+          TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
         run: |
           set -euo pipefail
           tofu plan -input=false -out=fleet-health.plan
@@ -140,14 +140,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: grafana
-    env:
-      GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
-      GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
-      GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
-      TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
-      TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
-      TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
-      TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -228,6 +220,13 @@ jobs:
       - name: Re-plan, verify reviewed digest, and apply
         working-directory: grafana
         env:
+          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
+          GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
+          GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
+          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
+          TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
+          TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
           REVIEWED_PLAN_DIGEST: ${{ needs.plan.outputs.plan_digest }}
         run: |
           set -euo pipefail
@@ -245,6 +244,9 @@ jobs:
           rm -f fleet-health.plan fleet-health-plan.txt fleet-health-plan.json
 
       - name: Wait for GitHub data source readiness
+        env:
+          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
+          GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
         run: |
           set -euo pipefail
           for _ in $(seq 1 30); do
@@ -263,6 +265,14 @@ jobs:
 
       - name: Prove no drift and state-only execution
         working-directory: grafana
+        env:
+          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
+          GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
+          GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
+          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
+          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
+          TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
+          TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
         run: |
           set -euo pipefail
           set +e
