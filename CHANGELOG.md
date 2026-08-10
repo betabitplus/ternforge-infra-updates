@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.0...v0.2.1) (2026-08-10)
+
+
+### Bug Fixes
+
+* require owner merge for tooling updates ([#38](https://github.com/betabitplus/ternforge-infra-updates/issues/38)) ([bf7c1c2](https://github.com/betabitplus/ternforge-infra-updates/commit/bf7c1c2c984b4eee932b384996f24a4c0a9e2ac7))
+
 ## [0.2.0](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.1.6...v0.2.0) (2026-08-09)
 
 
