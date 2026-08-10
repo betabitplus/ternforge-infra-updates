@@ -15,8 +15,8 @@ module.exports = {
   },
   packageRules: [
     {
-      description: "Released component snapshots change generated products",
-      matchManagers: ["vendir"],
+      description: "Generated product inputs are product fixes",
+      matchManagers: ["renovate-config", "vendir"],
       semanticCommitType: "fix",
     },
   ],
