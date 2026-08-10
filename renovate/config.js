@@ -4,6 +4,9 @@ module.exports = {
   vulnerabilityAlerts: { enabled: false },
   ignorePaths: ["**/_components/**"],
   enabledManagers: ["copier", "github-actions", "pep621", "renovate-config", "vendir"],
+  "renovate-config": {
+    managerFilePatterns: ["components/delivery/updates/template/renovate.json5"],
+  },
   semanticCommits: "enabled",
   prHourlyLimit: 0,
   constraints: {
