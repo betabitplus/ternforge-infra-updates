@@ -19,14 +19,6 @@
       "matchManagers": ["pep621"],
       "matchDepNames": ["py-lib-policy", "py-lib-testkit"],
       "semanticCommitType": "chore"
-    },
-    {
-      "description": "Stable tooling patch and minor updates may automerge after required CI",
-      "matchManagers": ["pep621"],
-      "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
-      "matchCurrentVersion": "!/^0/",
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
     }
   ]
 }
