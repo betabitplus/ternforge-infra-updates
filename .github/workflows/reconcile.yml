@@ -59,7 +59,7 @@ jobs:
           inventory=.inventory/fleet.auto.tfvars.json
           test -s "$inventory"
           jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
-          jq -e 'all(.repositories[]; ((.repository | type) == "string") and (.repository | test("^betabitplus/ternforge-[a-z0-9-]+$")))' "$inventory" >/dev/null
+          jq -e 'all(.repositories[]; ((.repository | type) == "string") and (.repository | test("^betabitplus/[a-z0-9][a-z0-9-]*$")) and .repository != "betabitplus/py-lib-starter")' "$inventory" >/dev/null
 
           jq -r '.repositories[].repository' "$inventory" > "$RUNNER_TEMP/fleet.actual"
           LC_ALL=C sort "$RUNNER_TEMP/fleet.actual" > "$RUNNER_TEMP/fleet.sorted"
@@ -114,8 +114,8 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          GRAFANA_OTLP_ENDPOINT: ${{ vars.TERNFORGE_GRAFANA_OTLP_ENDPOINT }}
-          GRAFANA_OTLP_USERNAME: ${{ vars.TERNFORGE_GRAFANA_OTLP_USERNAME }}
+          GRAFANA_OTLP_ENDPOINT: https://otlp-gateway-prod-eu-west-2.grafana.net/otlp
+          GRAFANA_OTLP_USERNAME: "1744167"
           GRAFANA_OTLP_PASSWORD: ${{ secrets.TERNFORGE_GRAFANA_OTLP_PASSWORD }}
           OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.156.0@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108
         run: |

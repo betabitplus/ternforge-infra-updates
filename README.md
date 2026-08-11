@@ -42,7 +42,7 @@ repository needs lockfile work.
 
 - `TERNFORGE_RENOVATE_CLIENT_ID` is a repository variable owned by OpenTofu.
 - `TERNFORGE_RENOVATE_PRIVATE_KEY` exists only as the `renovate` environment
-  secret; its custom deployment branch policy allows only `main`, and runtime
+  secret; repository-control owns its sole `main` deployment policy, and runtime
   tokens are downscoped to the exact managed fleet.
 - Release wake-ups use a second short-lived token minted from the existing
   `ternforge-release` App and limited to exactly this repository; no separate
@@ -74,10 +74,10 @@ critical state, never a weighted score.
 
 Grafana credentials are deliberately split by responsibility:
 
-- the `grafana` environment holds the stack service-account token, exact-stack
+- the `grafana` environment holds only the stack service-account token, exact-stack
   plugin access-policy token, GitHub App data-source secret and alert contact;
-- the `renovate` environment holds only the exact-stack `metrics:write` token
-  plus the non-secret OTLP endpoint and numeric instance ID;
+- the `renovate` environment holds only the exact-stack `metrics:write` token;
+  public Grafana identifiers and endpoints are Git-owned workflow/Terraform inputs;
 - all permanent tokens have explicit expiry and are rotated by creating a
   replacement, updating the corresponding protected environment secret, proving
   plan/reconciliation health, then revoking the old token.

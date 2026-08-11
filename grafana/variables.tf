@@ -1,6 +1,5 @@
 variable "grafana_stack_slug" {
-  type    = string
-  default = "cleverhop2412"
+  type = string
 }
 
 variable "github_app_id" {

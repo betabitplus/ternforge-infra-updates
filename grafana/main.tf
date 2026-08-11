@@ -4,6 +4,7 @@ provider "grafana" {
 
 provider "grafana" {
   alias      = "stack"
+  url        = "https://${var.grafana_stack_slug}.grafana.net"
   retries    = 3
   retry_wait = 5
 }
