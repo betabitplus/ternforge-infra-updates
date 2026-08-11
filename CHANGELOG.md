@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.1...v0.2.2) (2026-08-11)
+
+
+### Bug Fixes
+
+* keep grafana alert state on query errors ([#45](https://github.com/betabitplus/ternforge-infra-updates/issues/45)) ([6bc85ab](https://github.com/betabitplus/ternforge-infra-updates/commit/6bc85abfb471e8b129b656fdce8b289247758858))
+* release Renovate preset updates ([#43](https://github.com/betabitplus/ternforge-infra-updates/issues/43)) ([9a9392a](https://github.com/betabitplus/ternforge-infra-updates/commit/9a9392a125c92c398a9bed34d043bf4c1b57aa98))
+* scope Grafana credentials to required steps ([#40](https://github.com/betabitplus/ternforge-infra-updates/issues/40)) ([c469341](https://github.com/betabitplus/ternforge-infra-updates/commit/c46934186ef8f4612d8360b1a9ff397c29873262))
+* update embedded Renovate preset refs ([#42](https://github.com/betabitplus/ternforge-infra-updates/issues/42)) ([f03e3c7](https://github.com/betabitplus/ternforge-infra-updates/commit/f03e3c714e27259aee2e83ee2f993cbad7fa1418))
+
 ## [0.2.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.0...v0.2.1) (2026-08-10)
 
 
