@@ -138,7 +138,7 @@ resource "grafana_rule_group" "fleet_health" {
       condition      = "B"
       for            = "0s"
       no_data_state  = try(rule.value.no_data, "OK")
-      exec_err_state = "Error"
+      exec_err_state = "KeepLast"
       is_paused      = false
 
       annotations = {
