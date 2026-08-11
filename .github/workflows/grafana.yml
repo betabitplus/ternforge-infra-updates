@@ -16,6 +16,9 @@ env:
   SCALR_SA_EMAIL: ternforge-fleet-health-github@betabitplus-ternforge.scalr.io
   SCALR_CLI_VERSION: 0.18.0
   SCALR_WORKSPACE_ID: ws-v0pc9tb78frfm28ls
+  TF_VAR_grafana_stack_slug: cleverhop2412
+  TF_VAR_github_app_id: "4537858"
+  TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
 
 jobs:
   plan:
@@ -107,11 +110,8 @@ jobs:
         id: plan
         working-directory: grafana
         env:
-          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
           GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
           GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
-          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
-          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
           TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
           TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
         run: |
@@ -220,11 +220,8 @@ jobs:
       - name: Re-plan, verify reviewed digest, and apply
         working-directory: grafana
         env:
-          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
           GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
           GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
-          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
-          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
           TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
           TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
           REVIEWED_PLAN_DIGEST: ${{ needs.plan.outputs.plan_digest }}
@@ -245,14 +242,14 @@ jobs:
 
       - name: Wait for GitHub data source readiness
         env:
-          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
           GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
         run: |
           set -euo pipefail
+          grafana_url="https://${TF_VAR_grafana_stack_slug}.grafana.net"
           for _ in $(seq 1 30); do
             status="$(curl -sS -o health.json -w '%{http_code}' \
               -H "Authorization: Bearer ${GRAFANA_AUTH}" \
-              "${GRAFANA_URL}/api/datasources/uid/ternforge-github/health" || true)"
+              "${grafana_url}/api/datasources/uid/ternforge-github/health" || true)"
             if test "$status" = 200 && jq -e '.status == "OK"' health.json >/dev/null 2>&1; then
               rm -f health.json
               exit 0
@@ -266,11 +263,8 @@ jobs:
       - name: Prove no drift and state-only execution
         working-directory: grafana
         env:
-          GRAFANA_URL: ${{ vars.TERNFORGE_GRAFANA_URL }}
           GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
           GRAFANA_CLOUD_ACCESS_POLICY_TOKEN: ${{ secrets.TERNFORGE_GRAFANA_CLOUD_ACCESS_POLICY_TOKEN }}
-          TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
-          TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
           TF_VAR_github_data_source_secret: ${{ secrets.TERNFORGE_GRAFANA_GITHUB_SECURE_JSON }}
           TF_VAR_alert_email: ${{ secrets.TERNFORGE_GRAFANA_ALERT_EMAIL }}
         run: |
