@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.2...v0.2.3) (2026-08-11)
+
+
+### Bug Fixes
+
+* remove duplicated fleet health state ([#46](https://github.com/betabitplus/ternforge-infra-updates/issues/46)) ([de03f7f](https://github.com/betabitplus/ternforge-infra-updates/commit/de03f7fca040ac3c824c7fac377ace186854a66a))
+
 ## [0.2.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.1...v0.2.2) (2026-08-11)
 
 
