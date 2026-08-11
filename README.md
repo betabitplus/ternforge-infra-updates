@@ -11,8 +11,8 @@ versioned Renovate presets and the single reconciliation workflow.
 Every wake-up runs one pinned Renovate process across the exact current managed
 fleet. The workflow reads `fleet.auto.tfvars.json` at one resolved repository-
 control commit, requires the inventory to be sorted/unique and below 500
-repositories, verifies that the Renovate installation token exposes exactly that
-same set, and rejects the frozen `betabitplus/py-lib-starter` baseline.
+repositories, and verifies that the Renovate installation token exposes exactly
+that same set.
 
 The same job is entered through:
 
