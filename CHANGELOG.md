@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.4...v0.2.5) (2026-08-12)
+
+
+### Bug Fixes
+
+* enable JSONata Renovate managers ([#51](https://github.com/betabitplus/ternforge-infra-updates/issues/51)) ([690216b](https://github.com/betabitplus/ternforge-infra-updates/commit/690216bd07fc1f6f03f74e228745911cbda850e8))
+* prepare complete Renovate coverage ([#54](https://github.com/betabitplus/ternforge-infra-updates/issues/54)) ([9f1e146](https://github.com/betabitplus/ternforge-infra-updates/commit/9f1e146108429e1f16f08a7cbb96ec306c4ddf63))
+* release JSONata product updates ([#53](https://github.com/betabitplus/ternforge-infra-updates/issues/53)) ([8985639](https://github.com/betabitplus/ternforge-infra-updates/commit/8985639cda39cd69d92a439492eb330b6ab1e61b))
+
 ## [0.2.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.3...v0.2.4) (2026-08-12)
 
 
