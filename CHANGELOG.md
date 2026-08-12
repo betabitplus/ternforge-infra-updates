@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.7...v0.2.8) (2026-08-12)
+
+
+### Bug Fixes
+
+* regenerate OpenTofu provider locks ([#66](https://github.com/betabitplus/ternforge-infra-updates/issues/66)) ([063ea24](https://github.com/betabitplus/ternforge-infra-updates/commit/063ea241b049f6d0237df82dca6ef425f46616d6))
+
 ## [0.2.7](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.6...v0.2.7) (2026-08-12)
 
 
