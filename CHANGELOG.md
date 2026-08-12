@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.5...v0.2.6) (2026-08-12)
+
+
+### Bug Fixes
+
+* enable complete Renovate coverage ([#56](https://github.com/betabitplus/ternforge-infra-updates/issues/56)) ([50707d6](https://github.com/betabitplus/ternforge-infra-updates/commit/50707d69a4da9a3d00d02c43079433996bff0947))
+
 ## [0.2.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.4...v0.2.5) (2026-08-12)
 
 
