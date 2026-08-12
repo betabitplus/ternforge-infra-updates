@@ -3,7 +3,6 @@ module.exports = {
   requireConfig: "optional",
   vulnerabilityAlerts: { enabled: false },
   ignorePaths: ["**/_components/**"],
-  enabledManagers: ["copier", "custom.jsonata", "github-actions", "pep621", "renovate-config", "vendir"],
   extends: ["helpers:pinGitHubActionDigests"],
   "renovate-config": {
     managerFilePatterns: ["components/delivery/updates/template/renovate.json5"],
