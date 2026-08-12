@@ -17,11 +17,10 @@ module.exports = {
     {
       customType: "regex",
       description: "OpenTofu execution version",
-      managerFilePatterns: ["/(^|/)versions\\.tf$/", "/(^|/)\\.github/workflows/.+\\.ya?ml$/"],
+      managerFilePatterns: ["/(^|/)\\.opentofu-version$/", "/(^|/)versions\\.tf$/"],
       matchStrings: [
+        "^(?<currentValue>\\d+\\.\\d+\\.\\d+)\\s*$",
         "required_version\\s*=\\s*\"=\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
-        "tofu_version:\\s*(?<currentValue>\\d+\\.\\d+\\.\\d+)",
-        "\\.\"terraform-version\"\\s*==\\s*\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\"",
       ],
       depNameTemplate: "opentofu/opentofu",
       datasourceTemplate: "github-releases",
@@ -127,9 +126,9 @@ module.exports = {
       semanticCommitType: "fix",
     },
     {
-      description: "Use the OpenTofu registry for providers and modules",
-      matchDatasources: ["terraform-provider", "terraform-module"],
-      registryUrls: ["https://registry.opentofu.org"],
+      description: "Use Terraform Registry metadata for provider updates",
+      matchDatasources: ["terraform-provider"],
+      registryUrls: ["https://registry.terraform.io"],
     },
     {
       description: "OpenTofu required_version is handled by the explicit OpenTofu manager",
