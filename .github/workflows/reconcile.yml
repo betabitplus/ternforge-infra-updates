@@ -161,7 +161,7 @@ jobs:
         with:
           configurationFile: renovate/config.js
           token: ${{ steps.renovate-token.outputs.token }}
-          renovate-version: 44.7.2@sha256:e23f94ca319706e434ca693f3d28674a6749158c6bb761abd76ad4e81255c7ec
+          renovate-version: 44.26.0@sha256:eca4654d90229b8a87323c9a13154d8a0f3b0d398b9b7da036fef662601eaff2
           docker-network: ${{ steps.telemetry.outputs.network }}
           env-regex: '^(?:RENOVATE_\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy|OTEL_\w+)$'
 
