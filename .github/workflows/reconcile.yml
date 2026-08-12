@@ -19,7 +19,7 @@ concurrency:
 jobs:
   reconcile:
     name: reconcile full fleet
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     environment: renovate
     steps:
@@ -161,7 +161,7 @@ jobs:
         with:
           configurationFile: renovate/config.js
           token: ${{ steps.renovate-token.outputs.token }}
-          renovate-version: 44.7.2
+          renovate-version: 44.7.2@sha256:e23f94ca319706e434ca693f3d28674a6749158c6bb761abd76ad4e81255c7ec
           docker-network: ${{ steps.telemetry.outputs.network }}
           env-regex: '^(?:RENOVATE_\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy|OTEL_\w+)$'
 

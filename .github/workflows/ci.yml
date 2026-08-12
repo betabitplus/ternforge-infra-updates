@@ -13,7 +13,7 @@ permissions:
 jobs:
   required:
     name: ci / required
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Validate pull request title
@@ -54,7 +54,7 @@ jobs:
           docker run --rm \
             -v "$PWD:/repo" \
             -w /repo \
-            ghcr.io/renovatebot/renovate:44.7.2 \
+            ghcr.io/renovatebot/renovate:44.7.2@sha256:e23f94ca319706e434ca693f3d28674a6749158c6bb761abd76ad4e81255c7ec \
             renovate-config-validator --strict \
             renovate/config.js presets/python-library.json5
 
