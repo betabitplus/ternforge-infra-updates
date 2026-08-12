@@ -1,9 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [":maintainLockFilesMonthly"],
-  "dockerfile": { "enabled": false },
-  "pre-commit": { "enabled": false },
   "packageRules": [
+    {
+      "description": "Template-managed Docker and pre-commit config update through Copier",
+      "matchManagers": ["dockerfile", "pre-commit"],
+      "matchFileNames": [".devcontainer/Dockerfile", ".pre-commit-config.yaml"],
+      "enabled": false
+    },
     {
       "description": "Group Ternforge Python tooling Git dependencies",
       "matchManagers": ["pep621"],

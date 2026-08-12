@@ -2,7 +2,7 @@ module.exports = {
   onboarding: false,
   requireConfig: "optional",
   vulnerabilityAlerts: { enabled: false },
-  ignorePaths: ["**/_components/**"],
+  ignorePaths: ["template/_components/**"],
   extends: ["helpers:pinGitHubActionDigests"],
   "renovate-config": {
     managerFilePatterns: ["components/delivery/updates/template/renovate.json5"],
@@ -125,8 +125,8 @@ module.exports = {
   ],
   packageRules: [
     {
-      description: "Generated product inputs are product fixes",
-      matchManagers: ["custom.jsonata", "renovate-config", "vendir"],
+      description: "Component snapshot updates are product fixes",
+      matchManagers: ["vendir"],
       semanticCommitType: "fix",
     },
     {
@@ -143,8 +143,7 @@ module.exports = {
           "xargs -a .opentofu-version install-tool tofu",
           "tofu init -backend=false -input=false -upgrade",
         ],
-        fileFilters: [".terraform.lock.hcl", "**/.terraform.lock.hcl"],
-        executionMode: "update",
+        fileFilters: ["**/.terraform.lock.hcl"],
         workingDirTemplate: "{{{packageFileDir}}}",
       },
     },
@@ -158,11 +157,6 @@ module.exports = {
       description: "Keep Docker dependencies immutable",
       matchDatasources: ["docker"],
       pinDigests: true,
-    },
-    {
-      description: "Keep Renovate runtime inputs together",
-      matchPackageNames: ["ghcr.io/renovatebot/renovate"],
-      groupName: "Renovate runtime",
     },
   ],
 };
