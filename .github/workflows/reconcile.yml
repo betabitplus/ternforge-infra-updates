@@ -114,8 +114,8 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          GRAFANA_OTLP_ENDPOINT: https://otlp-gateway-prod-eu-west-2.grafana.net/otlp
-          GRAFANA_OTLP_USERNAME: "1744167"
+          GRAFANA_OTLP_ENDPOINT: ${{ vars.TERNFORGE_GRAFANA_OTLP_ENDPOINT }}
+          GRAFANA_OTLP_USERNAME: ${{ vars.TERNFORGE_GRAFANA_OTLP_USERNAME }}
           GRAFANA_OTLP_PASSWORD: ${{ secrets.TERNFORGE_GRAFANA_OTLP_PASSWORD }}
           OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.156.0@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108
         run: |
@@ -199,7 +199,7 @@ jobs:
             workflow_dispatch) trigger=manual ;;
             *) trigger=manual ;;
           esac
-          warning_count="$(gh api -X GET search/issues -f q='user:betabitplus is:issue is:open label:renovate/config-error' --jq '.total_count' 2>/dev/null || printf '0')"
+          warning_count="$(gh api -X GET search/issues -f q="user:${GITHUB_REPOSITORY_OWNER} is:issue is:open label:renovate/config-error" --jq '.total_count' 2>/dev/null || printf '0')"
           [[ "$warning_count" =~ ^[0-9]+$ ]] || warning_count=0
           timestamp_ns="${now}000000000"
 
