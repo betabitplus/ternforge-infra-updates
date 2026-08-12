@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.3...v0.2.4) (2026-08-12)
+
+
+### Bug Fixes
+
+* harden fleet health automation ([#49](https://github.com/betabitplus/ternforge-infra-updates/issues/49)) ([7272bc0](https://github.com/betabitplus/ternforge-infra-updates/commit/7272bc0c2ea9a475fb02eadc9eb0e3e06413e800))
+
 ## [0.2.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.2...v0.2.3) (2026-08-11)
 
 
