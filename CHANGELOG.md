@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.7](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.6...v0.2.7) (2026-08-12)
+
+
+### Bug Fixes
+
+* make Terraform provider updates reproducible ([#64](https://github.com/betabitplus/ternforge-infra-updates/issues/64)) ([c827663](https://github.com/betabitplus/ternforge-infra-updates/commit/c827663134b8211743b0931e2087d9cfde5f2740))
+* pin actionlint Go toolchain ([#62](https://github.com/betabitplus/ternforge-infra-updates/issues/62)) ([ea40690](https://github.com/betabitplus/ternforge-infra-updates/commit/ea40690cb2ca436f290b2d3d1a7cccac102822a5))
+
 ## [0.2.6](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.5...v0.2.6) (2026-08-12)
 
 
