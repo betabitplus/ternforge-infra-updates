@@ -9,6 +9,10 @@ module.exports = {
   },
   semanticCommits: "enabled",
   prHourlyLimit: 0,
+  allowedCommands: [
+    "^xargs -a \\.opentofu-version install-tool tofu$",
+    "^tofu init -backend=false -input=false -upgrade$",
+  ],
   constraints: {
     copier: "9.17.0",
     vendir: "0.46.0",
@@ -126,9 +130,23 @@ module.exports = {
       semanticCommitType: "fix",
     },
     {
-      description: "Use Terraform Registry metadata for provider updates",
-      matchDatasources: ["terraform-provider"],
-      registryUrls: ["https://registry.terraform.io"],
+      description: "Use the OpenTofu registry for providers and modules",
+      matchDatasources: ["terraform-provider", "terraform-module"],
+      registryUrls: ["https://registry.opentofu.org"],
+    },
+    {
+      description: "Regenerate OpenTofu provider locks in the same update",
+      matchManagers: ["terraform"],
+      matchDepTypes: ["required_provider"],
+      postUpgradeTasks: {
+        commands: [
+          "xargs -a .opentofu-version install-tool tofu",
+          "tofu init -backend=false -input=false -upgrade",
+        ],
+        fileFilters: [".terraform.lock.hcl", "**/.terraform.lock.hcl"],
+        executionMode: "update",
+        workingDirTemplate: "{{{packageFileDir}}}",
+      },
     },
     {
       description: "OpenTofu required_version is handled by the explicit OpenTofu manager",
