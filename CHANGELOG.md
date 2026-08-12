@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.9](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.8...v0.2.9) (2026-08-12)
+
+
+### Bug Fixes
+
+* simplify Renovate ownership boundaries ([#68](https://github.com/betabitplus/ternforge-infra-updates/issues/68)) ([6d9300e](https://github.com/betabitplus/ternforge-infra-updates/commit/6d9300ec449ea7ec79138b905aa401d16492575d))
+
 ## [0.2.8](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.7...v0.2.8) (2026-08-12)
 
 
