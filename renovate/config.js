@@ -16,7 +16,7 @@ module.exports = {
   packageRules: [
     {
       description: "Generated product inputs are product fixes",
-      matchManagers: ["renovate-config", "vendir"],
+      matchManagers: ["custom.jsonata", "renovate-config", "vendir"],
       semanticCommitType: "fix",
     },
   ],
