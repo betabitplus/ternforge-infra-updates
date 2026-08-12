@@ -16,8 +16,8 @@ env:
   SCALR_SA_EMAIL: ternforge-fleet-health-github@betabitplus-ternforge.scalr.io
   SCALR_CLI_VERSION: 0.18.0
   SCALR_WORKSPACE_ID: ws-v0pc9tb78frfm28ls
-  TF_VAR_grafana_stack_slug: cleverhop2412
-  TF_VAR_github_app_id: "4537858"
+  TF_VAR_grafana_stack_slug: ${{ vars.TERNFORGE_GRAFANA_STACK_SLUG }}
+  TF_VAR_github_app_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_APP_ID }}
   TF_VAR_github_app_installation_id: ${{ vars.TERNFORGE_GRAFANA_GITHUB_INSTALLATION_ID }}
 
 jobs:
@@ -120,7 +120,7 @@ jobs:
           tofu show -no-color fleet-health.plan > fleet-health-plan.txt
           tofu show -json fleet-health.plan > fleet-health-plan.json
           digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions}] | sort_by(.address)' \
+            '[.resource_changes[]? | select(.change.actions != ["no-op"] or .change.importing != null)] | sort_by(.address)' \
             fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
           printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
           {
@@ -231,7 +231,7 @@ jobs:
           tofu show -no-color fleet-health.plan > fleet-health-plan.txt
           tofu show -json fleet-health.plan > fleet-health-plan.json
           digest="$(jq -cS \
-            '[.resource_changes[]? | select(.change.actions != ["no-op"]) | {address, actions: .change.actions}] | sort_by(.address)' \
+            '[.resource_changes[]? | select(.change.actions != ["no-op"] or .change.importing != null)] | sort_by(.address)' \
             fleet-health-plan.json | sha256sum | cut -d' ' -f1)"
           test "$digest" = "$REVIEWED_PLAN_DIGEST" || {
             printf 'Plan changed after review: reviewed=%s current=%s\n' "$REVIEWED_PLAN_DIGEST" "$digest" >&2
@@ -241,15 +241,18 @@ jobs:
           rm -f fleet-health.plan fleet-health-plan.txt fleet-health-plan.json
 
       - name: Wait for GitHub data source readiness
+        working-directory: grafana
         env:
           GRAFANA_AUTH: ${{ secrets.TERNFORGE_GRAFANA_AUTH }}
         run: |
           set -euo pipefail
-          grafana_url="https://${TF_VAR_grafana_stack_slug}.grafana.net"
+          fleet_health="$(tofu output -json fleet_health)"
+          grafana_url="$(jq -er '.stack_url' <<<"$fleet_health")"
+          datasource_uid="$(jq -er '.datasource_uid' <<<"$fleet_health")"
           for _ in $(seq 1 30); do
             status="$(curl -sS -o health.json -w '%{http_code}' \
               -H "Authorization: Bearer ${GRAFANA_AUTH}" \
-              "${grafana_url}/api/datasources/uid/ternforge-github/health" || true)"
+              "${grafana_url}/api/datasources/uid/${datasource_uid}/health" || true)"
             if test "$status" = 200 && jq -e '.status == "OK"' health.json >/dev/null 2>&1; then
               rm -f health.json
               exit 0

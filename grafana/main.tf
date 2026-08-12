@@ -217,6 +217,7 @@ resource "grafana_rule_group" "fleet_health" {
 output "fleet_health" {
   value = {
     plugin_slug    = grafana_cloud_plugin_installation.github.slug
+    stack_url      = "https://${var.grafana_stack_slug}.grafana.net"
     folder_uid     = grafana_folder.fleet_health.uid
     datasource_uid = grafana_data_source.github.uid
     dashboard_uid  = grafana_dashboard.fleet_health.uid
