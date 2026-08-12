@@ -24,7 +24,7 @@ jobs:
   plan:
     name: fleet health grafana / plan
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment: grafana
     outputs:
@@ -137,7 +137,7 @@ jobs:
     name: fleet health grafana / apply
     if: github.ref == 'refs/heads/main'
     needs: plan
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     environment: grafana
     steps:
