@@ -109,6 +109,24 @@ jobs:
           printf 'scope_ok=%s\n' "$scope_ok" >> "$GITHUB_OUTPUT"
           diff -u "$RUNNER_TEMP/expected-repositories" "$RUNNER_TEMP/token-repositories"
 
+      - name: Create source-read dependency token
+        id: source-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.TERNFORGE_SOURCE_READ_CLIENT_ID }}
+          private-key: ${{ secrets.TERNFORGE_SOURCE_READ_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          permission-contents: read
+
+      - name: Export source-read dependency token as Renovate secret
+        env:
+          SOURCE_READ_TOKEN: ${{ steps.source-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          test -n "$SOURCE_READ_TOKEN"
+          renovate_secrets="$(jq -nc --arg token "$SOURCE_READ_TOKEN" '{"SOURCE_READ_TOKEN": $token}')"
+          printf 'RENOVATE_SECRETS=%s\n' "$renovate_secrets" >> "$GITHUB_ENV"
+
       - name: Start bounded Fleet Health telemetry
         id: telemetry
         if: always()

@@ -9,6 +9,12 @@ module.exports = {
   },
   semanticCommits: "enabled",
   prHourlyLimit: 0,
+  customEnvVariables: {
+    GIT_TERMINAL_PROMPT: "0",
+    GIT_CONFIG_COUNT: "1",
+    GIT_CONFIG_KEY_0: "url.https://x-access-token:{{ secrets.SOURCE_READ_TOKEN }}@github.com/.insteadOf",
+    GIT_CONFIG_VALUE_0: "https://github.com/",
+  },
   allowedCommands: [
     "^xargs -a \\.opentofu-version install-tool tofu$",
     "^tofu init -backend=false -input=false -upgrade$",
