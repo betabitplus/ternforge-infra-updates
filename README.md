@@ -30,8 +30,9 @@ per-repository job or direct consumer push exists.
 `presets/python-library.json5` is an immutable released preset used by generated
 Python libraries. Built-in managers cover Copier, Vendir, GitHub Actions, PEP
 621/Git dependencies and immutable Renovate preset references. Copier/Vendir,
-pre-1.0 tooling and major tooling changes stay manual. Stable tooling patch/minor
-updates may auto-merge only through ordinary PR rules after `ci / required`.
+pre-1.0 tooling, stable tooling patch/minor and major tooling changes stay manual.
+Renovate never receives authority to update `main`; after `ci / required`, the owner
+merges the PR through the repository-admin PR-only boundary.
 
 The official `:maintainLockFilesMonthly` preset is part of the Python policy and
 uses the same nightly reconciliation path. Each Python consumer's
