@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.1...v0.3.2) (2026-08-14)
+
+
+### Bug Fixes
+
+* remove hidden Renovate PR backlog limit ([#78](https://github.com/betabitplus/ternforge-infra-updates/issues/78)) ([aa6cfda](https://github.com/betabitplus/ternforge-infra-updates/commit/aa6cfda116fb19fa3bc2e65ec94d8fa1362026a1))
+
 ## [0.3.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.0...v0.3.1) (2026-08-14)
 
 
