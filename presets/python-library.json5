@@ -16,6 +16,13 @@
       "enabled": false
     },
     {
+      "description": "Template-managed Renovate config updates through Copier",
+      "matchManagers": ["renovate-config"],
+      "matchDepNames": ["betabitplus/ternforge-infra-updates"],
+      "matchFileNames": ["renovate.json5"],
+      "enabled": false
+    },
+    {
       "description": "Group Ternforge Python tooling Git dependencies",
       "matchManagers": ["pep621"],
       "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
