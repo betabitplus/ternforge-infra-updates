@@ -135,7 +135,7 @@ jobs:
           GRAFANA_OTLP_ENDPOINT: ${{ vars.TERNFORGE_GRAFANA_OTLP_ENDPOINT }}
           GRAFANA_OTLP_USERNAME: ${{ vars.TERNFORGE_GRAFANA_OTLP_USERNAME }}
           GRAFANA_OTLP_PASSWORD: ${{ secrets.TERNFORGE_GRAFANA_OTLP_PASSWORD }}
-          OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.156.0@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108
+          OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.158.0@sha256:c5918f78992ee73b0d6f0e599423ac5ec52dd5d9726733114d6eca53d5a32ed5
         run: |
           set -euo pipefail
           if test -z "$GRAFANA_OTLP_ENDPOINT" || test -z "$GRAFANA_OTLP_USERNAME" || test -z "$GRAFANA_OTLP_PASSWORD"; then
