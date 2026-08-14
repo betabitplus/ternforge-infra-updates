@@ -9,6 +9,7 @@ module.exports = {
   },
   semanticCommits: "enabled",
   prHourlyLimit: 0,
+  prConcurrentLimit: 0,
   customEnvVariables: {
     GIT_TERMINAL_PROMPT: "0",
     GIT_CONFIG_COUNT: "1",
