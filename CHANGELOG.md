@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.0...v0.3.1) (2026-08-14)
+
+
+### Bug Fixes
+
+* keep Renovate config template-owned ([#76](https://github.com/betabitplus/ternforge-infra-updates/issues/76)) ([dbf2b26](https://github.com/betabitplus/ternforge-infra-updates/commit/dbf2b26660952e8c4b785aa9d3d961697facafa6))
+
 ## [0.3.0](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.9...v0.3.0) (2026-08-14)
 
 
