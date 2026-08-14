@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.9...v0.3.0) (2026-08-14)
+
+
+### Features
+
+* update local CI runtime tools ([#74](https://github.com/betabitplus/ternforge-infra-updates/issues/74)) ([9a126d1](https://github.com/betabitplus/ternforge-infra-updates/commit/9a126d18c41728248d4f06a4a8c5fb856f81a95d))
+
+
+### Bug Fixes
+
+* authenticate private source dependencies ([#72](https://github.com/betabitplus/ternforge-infra-updates/issues/72)) ([8b852e4](https://github.com/betabitplus/ternforge-infra-updates/commit/8b852e478c41eda545fe320c719b69455ae17adf))
+* keep template-owned CI pins single-owner ([#75](https://github.com/betabitplus/ternforge-infra-updates/issues/75)) ([4508c23](https://github.com/betabitplus/ternforge-infra-updates/commit/4508c23a5b7aeadc4125d4ba9803845cd0de9d2b))
+
 ## [0.2.9](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.2.8...v0.2.9) (2026-08-12)
 
 
