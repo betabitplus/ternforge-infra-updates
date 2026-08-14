@@ -128,6 +128,14 @@ module.exports = {
       versioningTemplate: "semver",
       extractVersionTemplate: "^v(?<version>.*)$",
     },
+    {
+      customType: "regex",
+      description: "Local CI runtime tools",
+      managerFilePatterns: ["/(^|/)local-ci/versions\\.env$/"],
+      matchStrings: [
+        "# renovate: datasource=(?<datasource>[^\\s]+) depName=(?<depName>[^\\s]+) versioning=(?<versioning>[^\\s]+) extractVersion=(?<extractVersion>[^\\s]+)\\s+[A-Z0-9_]+_VERSION=(?<currentValue>[^\\s]+)",
+      ],
+    },
   ],
   packageRules: [
     {
