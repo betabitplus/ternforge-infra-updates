@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.2...v0.3.3) (2026-08-15)
+
+
+### Bug Fixes
+
+* follow component uv version source ([#86](https://github.com/betabitplus/ternforge-infra-updates/issues/86)) ([5d5d0b3](https://github.com/betabitplus/ternforge-infra-updates/commit/5d5d0b30997e0864c257e5915056cf1f709230aa))
+* follow uv release tags ([#88](https://github.com/betabitplus/ternforge-infra-updates/issues/88)) ([7fa2b05](https://github.com/betabitplus/ternforge-infra-updates/commit/7fa2b0548effd99ced5b0d78df0c584dc1c0525e))
+
 ## [0.3.2](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.1...v0.3.2) (2026-08-14)
 
 
