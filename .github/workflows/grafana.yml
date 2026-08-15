@@ -14,6 +14,7 @@ concurrency:
 env:
   SCALR_HOSTNAME: betabitplus-ternforge.scalr.io
   SCALR_SA_EMAIL: ternforge-fleet-health-github@betabitplus-ternforge.scalr.io
+  # renovate: datasource=github-releases depName=Scalr/scalr-cli versioning=semver extractVersion=^v(?<version>.*)$
   SCALR_CLI_VERSION: 0.18.0
   SCALR_WORKSPACE_ID: ws-v0pc9tb78frfm28ls
   TF_VAR_grafana_stack_slug: ${{ vars.TERNFORGE_GRAFANA_STACK_SLUG }}

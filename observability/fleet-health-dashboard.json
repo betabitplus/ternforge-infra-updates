@@ -73,20 +73,11 @@
       "targets": [{"refId": "A", "queryType": "Issues", "owner": "betabitplus", "repository": "", "options": {"query": "is:open label:renovate/config-error", "timeField": 2}}]
     },
     {
-      "id": 8,
-      "type": "timeseries",
-      "title": "Renovate bounded span durations",
-      "datasource": {"type": "prometheus", "uid": "grafanacloud-prom"},
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 13},
-      "targets": [{"refId": "A", "expr": "rate(traces_span_metrics_duration_milliseconds_sum[5m]) / rate(traces_span_metrics_duration_milliseconds_count[5m])", "legendFormat": "{{span_name}}"}],
-      "fieldConfig": {"defaults": {"unit": "ms"}, "overrides": []}
-    },
-    {
       "id": 9,
       "type": "stat",
       "title": "Capacity: active OTLP series",
       "datasource": {"type": "prometheus", "uid": "grafanacloud-prom"},
-      "gridPos": {"h": 4, "w": 6, "x": 12, "y": 13},
+      "gridPos": {"h": 4, "w": 6, "x": 0, "y": 13},
       "targets": [{"refId": "A", "expr": "grafanacloud_instance_active_otlp_series", "instant": true}]
     },
     {
@@ -94,7 +85,7 @@
       "type": "stat",
       "title": "Capacity: included DPM / series",
       "datasource": {"type": "prometheus", "uid": "grafanacloud-prom"},
-      "gridPos": {"h": 4, "w": 6, "x": 18, "y": 13},
+      "gridPos": {"h": 4, "w": 6, "x": 6, "y": 13},
       "targets": [{"refId": "A", "expr": "grafanacloud_org_metrics_included_dpm_per_series", "instant": true}]
     },
     {
@@ -102,7 +93,7 @@
       "type": "table",
       "title": "Native full-fleet workflow runs",
       "datasource": {"type": "grafana-github-datasource", "uid": "ternforge-github"},
-      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 17},
+      "gridPos": {"h": 7, "w": 12, "x": 12, "y": 13},
       "targets": [{"refId": "A", "queryType": "Workflow_Runs", "owner": "betabitplus", "repository": "ternforge-infra-updates", "options": {"workflow": "reconcile.yml", "branch": "main"}}]
     }
   ]

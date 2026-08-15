@@ -53,13 +53,12 @@ repository needs lockfile work.
 
 ## Fleet Health
 
-The existing reconciliation job exports a bounded Fleet Health signal through one
-pinned ephemeral OpenTelemetry Collector. Workflow metrics cover delivery result,
-queue/processing duration, recovery freshness, exact fleet/token coverage and
-Renovate configuration warnings. Renovate traces are reduced to the already
-validated bounded span-metrics contract; traces themselves are not exported.
-Repository, branch, command, path, SHA and run-ID labels are not part of the
-persistent telemetry contract.
+The existing reconciliation job exports its bounded Fleet Health metrics directly
+to the Grafana Cloud OTLP endpoint. They cover delivery result, queue/processing
+duration, recovery freshness, exact fleet/token coverage and Renovate configuration
+warnings. No Collector, Renovate trace export or span-metrics pipeline is part of
+the runtime path. Repository, branch, command, path, SHA and run-ID labels are not
+part of the persistent telemetry contract.
 
 Grafana Cloud configuration lives in `grafana/` and is applied only by the
 manual **fleet health grafana** workflow. It uses the same protected two-stage
