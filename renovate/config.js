@@ -87,7 +87,6 @@ module.exports = {
       depNameTemplate: "astral-sh/uv",
       datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
-      extractVersionTemplate: "^v(?<version>.*)$",
     },
     {
       customType: "regex",
