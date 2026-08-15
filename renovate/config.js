@@ -17,6 +17,8 @@ module.exports = {
     GIT_CONFIG_VALUE_0: "https://github.com/",
   },
   allowedCommands: [
+    "^python -c \\\"import os,tomllib; v=tomllib\\.load\\(open\\('pyproject\\.toml','rb'\\)\\)\\['tool'\\]\\['uv'\\]\\['required-version'\\]\\.removeprefix\\('=='\\); os\\.execvp\\('install-tool',\\['install-tool','uv',v\\]\\)\\\"$",
+    "^uv lock$",
     "^xargs -a \\.opentofu-version install-tool tofu$",
     "^tofu init -backend=false -input=false -upgrade$",
   ],
@@ -98,6 +100,20 @@ module.exports = {
     },
   ],
   packageRules: [
+    {
+      description: "Refresh Python lock after template updates",
+      matchManagers: ["copier"],
+      matchPackageNames: ["https://github.com/betabitplus/ternforge-template-py-library.git"],
+      postUpgradeTasks: {
+        commands: [
+          "python -c \"import os,tomllib; v=tomllib.load(open('pyproject.toml','rb'))['tool']['uv']['required-version'].removeprefix('=='); os.execvp('install-tool',['install-tool','uv',v])\"",
+          "uv lock",
+        ],
+        fileFilters: ["uv.lock"],
+        installTools: { python: {} },
+        workingDirTemplate: "{{{packageFileDir}}}",
+      },
+    },
     {
       description: "Component snapshot updates are product fixes",
       matchManagers: ["vendir"],
