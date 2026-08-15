@@ -54,7 +54,9 @@ jobs:
       - name: Validate workflows with actionlint
         env:
           GOTOOLCHAIN: local
-        run: go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.12
+          # renovate: datasource=github-releases depName=rhysd/actionlint versioning=semver extractVersion=^v(?<version>.*)$
+          ACTIONLINT_VERSION: 1.7.12
+        run: go run "github.com/rhysd/actionlint/cmd/actionlint@v${ACTIONLINT_VERSION}"
 
       - name: Validate Renovate configuration
         run: |
@@ -74,19 +76,6 @@ jobs:
           tofu init -backend=false -input=false -lockfile=readonly
           tofu validate
 
-      - name: Validate pinned Collector configuration
-        env:
-          OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.156.0@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108
-        run: |
-          set -euo pipefail
-          docker run --rm \
-            -e GRAFANA_OTLP_ENDPOINT=https://example.invalid/otlp \
-            -e GRAFANA_OTLP_USERNAME=123456 \
-            -e GRAFANA_OTLP_PASSWORD=redacted \
-            -v "$PWD/observability/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro" \
-            "$OTEL_IMAGE" \
-            validate --config=/etc/otelcol-contrib/config.yaml
-
       - name: Verify repository files
         run: |
           set -euo pipefail
@@ -98,6 +87,4 @@ jobs:
           test -s .copier-answers.yml
           test -s README.md
           test -s presets/python-library.json5
-          test -s observability/otel-collector.yml
           test -s grafana/.terraform.lock.hcl
-          ! grep -E 'attributes\["(repository|branch|command|path|sha|run[_ -]?id)"\]|^[[:space:]]*- name: (repository|branch|command|path|sha|run[_ -]?id)' observability/otel-collector.yml

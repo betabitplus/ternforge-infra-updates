@@ -127,66 +127,25 @@ jobs:
           renovate_secrets="$(jq -nc --arg token "$SOURCE_READ_TOKEN" '{"SOURCE_READ_TOKEN": $token}')"
           printf 'RENOVATE_SECRETS=%s\n' "$renovate_secrets" >> "$GITHUB_ENV"
 
-      - name: Start bounded Fleet Health telemetry
-        id: telemetry
+      - name: Reconcile current full fleet
+        uses: renovatebot/github-action@316d7cd859606d6039a2182b7d69199e9b036835 # v46.2.1
+        env:
+          LOG_LEVEL: info
+          RENOVATE_REPOSITORIES: ${{ steps.fleet.outputs.repositories_json }}
+        with:
+          configurationFile: renovate/config.js
+          token: ${{ steps.renovate-token.outputs.token }}
+          renovate-version: 44.7.2@sha256:e23f94ca319706e434ca693f3d28674a6749158c6bb761abd76ad4e81255c7ec
+          env-regex: '^(?:RENOVATE_\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy)$'
+
+      - name: Export bounded Fleet Health metrics
+        id: telemetry_export
         if: always()
         continue-on-error: true
         env:
           GRAFANA_OTLP_ENDPOINT: ${{ vars.TERNFORGE_GRAFANA_OTLP_ENDPOINT }}
           GRAFANA_OTLP_USERNAME: ${{ vars.TERNFORGE_GRAFANA_OTLP_USERNAME }}
           GRAFANA_OTLP_PASSWORD: ${{ secrets.TERNFORGE_GRAFANA_OTLP_PASSWORD }}
-          OTEL_IMAGE: otel/opentelemetry-collector-contrib:0.156.0@sha256:125bdbeb7590cc1952c5b3430ecf14063568980c2c93d5b38676cc0446ed8108
-        run: |
-          set -euo pipefail
-          if test -z "$GRAFANA_OTLP_ENDPOINT" || test -z "$GRAFANA_OTLP_USERNAME" || test -z "$GRAFANA_OTLP_PASSWORD"; then
-            echo 'enabled=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          docker network create ternforge-observability >/dev/null
-          docker run -d --rm \
-            --name ternforge-otel \
-            --network ternforge-observability \
-            -p 127.0.0.1:4318:4318 \
-            -p 127.0.0.1:13133:13133 \
-            -e GRAFANA_OTLP_ENDPOINT \
-            -e GRAFANA_OTLP_USERNAME \
-            -e GRAFANA_OTLP_PASSWORD \
-            -v "$PWD/observability/otel-collector.yml:/etc/otelcol-contrib/config.yaml:ro" \
-            "$OTEL_IMAGE" >/dev/null
-          for _ in $(seq 1 30); do
-            if curl -fsS http://127.0.0.1:13133/ >/dev/null; then
-              {
-                echo 'enabled=true'
-                echo 'network=ternforge-observability'
-                echo 'collector_endpoint=http://ternforge-otel:4318'
-              } >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            sleep 1
-          done
-          docker logs ternforge-otel >&2 || true
-          exit 1
-
-      - name: Reconcile current full fleet
-        uses: renovatebot/github-action@316d7cd859606d6039a2182b7d69199e9b036835 # v46.2.1
-        env:
-          LOG_LEVEL: info
-          RENOVATE_REPOSITORIES: ${{ steps.fleet.outputs.repositories_json }}
-          OTEL_SDK_DISABLED: ${{ steps.telemetry.outputs.enabled != 'true' }}
-          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ steps.telemetry.outputs.collector_endpoint }}
-          OTEL_SERVICE_NAME: renovate
-          OTEL_SERVICE_NAMESPACE: ternforge
-        with:
-          configurationFile: renovate/config.js
-          token: ${{ steps.renovate-token.outputs.token }}
-          renovate-version: 44.7.2@sha256:e23f94ca319706e434ca693f3d28674a6749158c6bb761abd76ad4e81255c7ec
-          docker-network: ${{ steps.telemetry.outputs.network }}
-          env-regex: '^(?:RENOVATE_\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy|OTEL_\w+)$'
-
-      - name: Export bounded Fleet Health metrics
-        if: always()
-        continue-on-error: true
-        env:
           EXPECTED_REPOSITORIES: ${{ steps.fleet.outputs.repository_count }}
           GH_TOKEN: ${{ steps.renovate-token.outputs.token }}
           JOB_STATUS: ${{ job.status }}
@@ -194,10 +153,13 @@ jobs:
           QUEUE_SECONDS: ${{ steps.timing.outputs.queue_seconds }}
           SCOPE_OK: ${{ steps.token-scope.outputs.scope_ok }}
           STARTED_EPOCH: ${{ steps.timing.outputs.started_epoch }}
-          TELEMETRY_ENABLED: ${{ steps.telemetry.outputs.enabled }}
         run: |
           set -euo pipefail
-          test "$TELEMETRY_ENABLED" = true || exit 0
+          echo 'status=disabled' >> "$GITHUB_OUTPUT"
+          if test -z "$GRAFANA_OTLP_ENDPOINT" || test -z "$GRAFANA_OTLP_USERNAME" || test -z "$GRAFANA_OTLP_PASSWORD"; then
+            exit 0
+          fi
+          echo 'status=failed' >> "$GITHUB_OUTPUT"
           now="$(date -u +%s)"
           total_seconds="$((now - ${STARTED_EPOCH:-now}))"
           queue_seconds="${QUEUE_SECONDS:-0}"
@@ -232,48 +194,40 @@ jobs:
             --argjson observed "$observed" \
             --argjson scopeOk "$scope_ok" \
             --argjson warnings "$warning_count" '
-              def point($value): {timeUnixNano: $timestamp, asDouble: $value};
-              def gauge($name; $value): {name: $name, gauge: {dataPoints: [point($value)]}};
+              def trigger_attributes: [{key: "ternforge.trigger", value: {stringValue: $trigger}}];
+              def point($value; $attributes): {timeUnixNano: $timestamp, asDouble: $value, attributes: $attributes};
+              def gauge($name; $value; $attributes): {name: $name, gauge: {dataPoints: [point($value; $attributes)]}};
               def scope($metrics): {scope: {name: "ternforge.fleet-health", version: "1"}, metrics: $metrics};
-              def resource($attrs; $metrics): {resource: {attributes: $attrs}, scopeMetrics: [scope($metrics)]};
+              def resource($metrics): {
+                resource: {attributes: [{key: "service.name", value: {stringValue: "ternforge-update"}}]},
+                scopeMetrics: [scope($metrics)]
+              };
               {
                 resourceMetrics: [
-                  resource([
-                    {key: "service.name", value: {stringValue: "ternforge-update"}},
-                    {key: "ternforge.trigger", value: {stringValue: $trigger}}
-                  ]; ([
-                    gauge("ternforge_update_processing_duration_seconds"; $total),
-                    gauge("ternforge_update_queue_delay_seconds"; $queue),
-                    gauge("ternforge_update_run_success"; $success)
+                  resource(([
+                    gauge("ternforge_update_processing_duration_seconds"; $total; trigger_attributes),
+                    gauge("ternforge_update_queue_delay_seconds"; $queue; trigger_attributes),
+                    gauge("ternforge_update_run_success"; $success; trigger_attributes)
                   ] + (if $trigger == "release" then [
-                    gauge("ternforge_fleet_expected_repositories"; $expected),
-                    gauge("ternforge_fleet_observed_repositories"; $observed),
-                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk)
-                  ] else [] end))),
-                  resource([
-                    {key: "service.name", value: {stringValue: "ternforge-update"}}
-                  ]; ([
-                    gauge("ternforge_renovate_configuration_warnings"; $warnings)
+                    gauge("ternforge_fleet_expected_repositories"; $expected; trigger_attributes),
+                    gauge("ternforge_fleet_observed_repositories"; $observed; trigger_attributes),
+                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk; trigger_attributes)
+                  ] else [] end) + [
+                    gauge("ternforge_renovate_configuration_warnings"; $warnings; [])
                   ] + (if $lastSuccess != null then [
-                    gauge("ternforge_update_last_success_unixtime"; $lastSuccess)
+                    gauge("ternforge_update_last_success_unixtime"; $lastSuccess; [])
                   ] else [] end)))
                 ]
               }
             ')"
           curl -fsS \
+            --retry 3 \
+            --retry-all-errors \
+            --user "$GRAFANA_OTLP_USERNAME:$GRAFANA_OTLP_PASSWORD" \
             -H 'Content-Type: application/json' \
             --data-binary "$payload" \
-            http://127.0.0.1:4318/v1/metrics >/dev/null
-
-      - name: Stop Fleet Health telemetry
-        if: always()
-        continue-on-error: true
-        run: |
-          set -euo pipefail
-          if docker ps -a --format '{{.Names}}' | grep -qx ternforge-otel; then
-            docker stop --time 10 ternforge-otel >/dev/null
-          fi
-          docker network rm ternforge-observability >/dev/null 2>&1 || true
+            "${GRAFANA_OTLP_ENDPOINT%/}/v1/metrics" >/dev/null
+          echo 'status=exported' >> "$GITHUB_OUTPUT"
 
       - name: Record native execution evidence
         if: always()
@@ -285,7 +239,7 @@ jobs:
           SOURCE_REF: ${{ github.event.client_payload.source_ref }}
           SOURCE_SHA: ${{ github.event.client_payload.source_sha }}
           STARTED_EPOCH: ${{ steps.timing.outputs.started_epoch }}
-          TELEMETRY_ENABLED: ${{ steps.telemetry.outputs.enabled }}
+          TELEMETRY_STATUS: ${{ steps.telemetry_export.outputs.status }}
         run: |
           set -euo pipefail
           finished_epoch="$(date -u +%s)"
@@ -300,7 +254,7 @@ jobs:
             printf '| Managed repositories | %s |\n' "${REPOSITORY_COUNT:-unknown}"
             printf '| Queue seconds | %s |\n' "${QUEUE_SECONDS:-unknown}"
             printf '| Total job seconds | %s |\n' "$total_seconds"
-            printf '| Fleet Health telemetry | %s |\n' "${TELEMETRY_ENABLED:-false}"
+            printf '| Fleet Health telemetry | %s |\n' "${TELEMETRY_STATUS:-unknown}"
             printf '| Audit source repository | %s |\n' "${SOURCE_REPOSITORY:-n/a}"
             printf '| Audit source ref | %s |\n' "${SOURCE_REF:-n/a}"
             printf '| Audit source SHA | %s |\n' "${SOURCE_SHA:-n/a}"
