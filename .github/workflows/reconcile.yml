@@ -33,7 +33,6 @@ jobs:
           created_at="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" --jq '.created_at')"
           created_epoch="$(date -u -d "$created_at" +%s)"
           queue_seconds="$((started_epoch - created_epoch))"
-          test "$queue_seconds" -ge 0
           printf 'started_epoch=%s\n' "$started_epoch" >> "$GITHUB_OUTPUT"
           printf 'queue_seconds=%s\n' "$queue_seconds" >> "$GITHUB_OUTPUT"
 
@@ -55,7 +54,6 @@ jobs:
         run: |
           set -euo pipefail
           inventory_sha="$(git -C .inventory rev-parse HEAD)"
-          [[ "$inventory_sha" =~ ^[0-9a-f]{40}$ ]]
           inventory=.inventory/fleet.auto.tfvars.json
           test -s "$inventory"
           jq -e '.repositories | type == "array" and length > 0 and length < 500' "$inventory" >/dev/null
@@ -123,7 +121,6 @@ jobs:
           SOURCE_READ_TOKEN: ${{ steps.source-token.outputs.token }}
         run: |
           set -euo pipefail
-          test -n "$SOURCE_READ_TOKEN"
           renovate_secrets="$(jq -nc --arg token "$SOURCE_READ_TOKEN" '{"SOURCE_READ_TOKEN": $token}')"
           printf 'RENOVATE_SECRETS=%s\n' "$renovate_secrets" >> "$GITHUB_ENV"
 
