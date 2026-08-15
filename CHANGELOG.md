@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.3...v0.3.4) (2026-08-15)
+
+
+### Bug Fixes
+
+* make template updates own Python locks ([#89](https://github.com/betabitplus/ternforge-infra-updates/issues/89)) ([247abe0](https://github.com/betabitplus/ternforge-infra-updates/commit/247abe009ea4fc1d32c8e4c7375088f664c2bb48))
+
 ## [0.3.3](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.2...v0.3.3) (2026-08-15)
 
 
