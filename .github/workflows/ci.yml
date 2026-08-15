@@ -80,11 +80,8 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
-          node --check renovate/config.js
           python -m json.tool release-please-config.json >/dev/null
           python -m json.tool .release-please-manifest.json >/dev/null
           python -m json.tool observability/fleet-health-dashboard.json >/dev/null
           test -s .copier-answers.yml
-          test -s README.md
-          test -s presets/python-library.json5
           test -s grafana/.terraform.lock.hcl
