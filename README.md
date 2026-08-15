@@ -59,7 +59,9 @@ update-delivery metrics. It emits one small best-effort OTLP/HTTP payload direct
 to Grafana Cloud for delivery result, queue/processing duration, recovery freshness,
 exact fleet/token coverage and Renovate configuration warnings. Delivery metrics keep
 the bounded trigger dimension; fleet/token coverage is trigger-independent current
-state and is refreshed by every full-fleet reconciliation.
+state and is refreshed only from completed authoritative inventory/token readback.
+Unavailable current-state readback is omitted rather than encoded as zero, and the
+configuration-warning count is filtered back to the exact current managed fleet.
 
 This repository does **not** own Grafana resources, dashboards, alert rules,
 GitHub data-source configuration or a general platform-health collector. The metric
