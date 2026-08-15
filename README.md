@@ -3,8 +3,10 @@
 GitHub-hosted full-fleet update delivery for Ternforge repositories.
 
 Repository membership and public client IDs are owned by
-`betabitplus/ternforge-infra-repository-control`. This repository owns the
-versioned Renovate presets and the single reconciliation workflow.
+`betabitplus/ternforge-infra-repository-control`. This repository owns only the
+versioned Renovate policy/preset and the single full-fleet reconciliation path.
+Platform dashboard, alerts, Grafana/OpenTofu configuration and observability state
+belong to `betabitplus/ternforge-infra-observability`.
 
 ## Reconciliation contract
 
@@ -48,39 +50,24 @@ repository needs lockfile work.
 - Release wake-ups use a second short-lived token minted from the existing
   `ternforge-release` App and limited to exactly this repository; no separate
   Dispatch App exists.
-- Private dependency credentials are not configured until a real private source
-  exists.
+- Private dependency credentials use the dedicated read-only source App.
 
-## Fleet Health
+## Update telemetry producer
 
-The existing reconciliation job exports its bounded Fleet Health metrics directly
-to the Grafana Cloud OTLP endpoint. They cover delivery result, queue/processing
-duration, recovery freshness, exact fleet/token coverage and Renovate configuration
-warnings. No Collector, Renovate trace export or span-metrics pipeline is part of
-the runtime path. Repository, branch, command, path, SHA and run-ID labels are not
-part of the persistent telemetry contract.
+The reconciliation job remains the authoritative producer of its own bounded
+update-delivery metrics. It emits one small best-effort OTLP/HTTP payload directly
+to Grafana Cloud for delivery result, queue/processing duration, recovery freshness,
+exact fleet/token coverage and Renovate configuration warnings.
 
-Grafana Cloud configuration lives in `grafana/` and is applied only by the
-manual **fleet health grafana** workflow. It uses the same protected two-stage
-plan/review/apply pattern as repository control, but a separate Scalr state-only
-workspace and a separate OIDC service account. State, plans and plan JSON are
-sensitive and never become workflow artifacts.
+This repository does **not** own Grafana resources, dashboards, alert rules,
+GitHub data-source configuration or a general platform-health collector. The metric
+contract stays independent of fleet size: repository, branch, command, path, SHA
+and run ID are not persistent labels. No Collector, trace export or per-repository
+metric fan-out exists.
 
-The Grafana GitHub data source uses the dedicated read-only
-`ternforge-fleet-health` GitHub App. It is a current-state/drill-down source for
-PRs, Renovate warnings and workflow runs; critical delivery alerts use the
-bounded workflow metrics instead. The dashboard overall state is the worst
-critical state, never a weighted score.
-
-Grafana credentials are deliberately split by responsibility:
-
-- the `grafana` environment holds only the stack service-account token, exact-stack
-  plugin access-policy token, GitHub App data-source secret and alert contact;
-- the `renovate` environment holds only the exact-stack `metrics:write` token;
-  public Grafana identifiers and endpoints are Git-owned workflow/Terraform inputs;
-- all permanent tokens have explicit expiry and are rotated by creating a
-  replacement, updating the corresponding protected environment secret, proving
-  plan/reconciliation health, then revoking the old token.
+`ternforge-infra-observability` consumes these bounded metrics alongside cached
+GitHub data-source views for broader platform health. General CI/release/control
+visibility therefore adds no custom OTLP series here.
 
 ## Operator recovery
 
@@ -100,9 +87,9 @@ not use `copier recopy`, patch artifacts or a second ownership manifest.
 
 ## Validation
 
-Pull requests run `actionlint`, strict Renovate configuration validation and
-basic repository-file validation. Inventory validation and exact token-scope
-readback happen in the reconciliation workflow against the authoritative
-repository-control inventory. Native Renovate logs remain the source for
-per-repository timings; the workflow Job Summary records queue time, total job
-time, inventory commit and release audit identity.
+Pull requests run `actionlint`, strict Renovate configuration validation and basic
+repository-file validation. Inventory validation and exact token-scope readback
+happen in the reconciliation workflow against the authoritative repository-control
+inventory. Native Renovate logs remain the source for per-repository timings; the
+workflow Job Summary records queue time, total job time, inventory commit and
+release audit identity.
