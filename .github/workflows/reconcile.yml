@@ -207,12 +207,10 @@ jobs:
                   resource(([
                     gauge("ternforge_update_processing_duration_seconds"; $total; trigger_attributes),
                     gauge("ternforge_update_queue_delay_seconds"; $queue; trigger_attributes),
-                    gauge("ternforge_update_run_success"; $success; trigger_attributes)
-                  ] + (if $trigger == "release" then [
-                    gauge("ternforge_fleet_expected_repositories"; $expected; trigger_attributes),
-                    gauge("ternforge_fleet_observed_repositories"; $observed; trigger_attributes),
-                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk; trigger_attributes)
-                  ] else [] end) + [
+                    gauge("ternforge_update_run_success"; $success; trigger_attributes),
+                    gauge("ternforge_fleet_expected_repositories"; $expected; []),
+                    gauge("ternforge_fleet_observed_repositories"; $observed; []),
+                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk; []),
                     gauge("ternforge_renovate_configuration_warnings"; $warnings; [])
                   ] + (if $lastSuccess != null then [
                     gauge("ternforge_update_last_success_unixtime"; $lastSuccess; [])

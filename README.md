@@ -57,7 +57,9 @@ repository needs lockfile work.
 The reconciliation job remains the authoritative producer of its own bounded
 update-delivery metrics. It emits one small best-effort OTLP/HTTP payload directly
 to Grafana Cloud for delivery result, queue/processing duration, recovery freshness,
-exact fleet/token coverage and Renovate configuration warnings.
+exact fleet/token coverage and Renovate configuration warnings. Delivery metrics keep
+the bounded trigger dimension; fleet/token coverage is trigger-independent current
+state and is refreshed by every full-fleet reconciliation.
 
 This repository does **not** own Grafana resources, dashboards, alert rules,
 GitHub data-source configuration or a general platform-health collector. The metric
