@@ -147,6 +147,7 @@ jobs:
           GRAFANA_OTLP_USERNAME: ${{ vars.TERNFORGE_GRAFANA_OTLP_USERNAME }}
           GRAFANA_OTLP_PASSWORD: ${{ secrets.TERNFORGE_GRAFANA_OTLP_PASSWORD }}
           EXPECTED_REPOSITORIES: ${{ steps.fleet.outputs.repository_count }}
+          EXPECTED_REPOSITORY_NAMES: ${{ steps.fleet.outputs.repositories_json }}
           GH_TOKEN: ${{ steps.renovate-token.outputs.token }}
           JOB_STATUS: ${{ job.status }}
           OBSERVED_REPOSITORIES: ${{ steps.token-scope.outputs.observed_count }}
@@ -163,9 +164,9 @@ jobs:
           now="$(date -u +%s)"
           total_seconds="$((now - ${STARTED_EPOCH:-now}))"
           queue_seconds="${QUEUE_SECONDS:-0}"
-          expected="${EXPECTED_REPOSITORIES:-0}"
-          observed="${OBSERVED_REPOSITORIES:-0}"
-          scope_ok="${SCOPE_OK:-0}"
+          expected="${EXPECTED_REPOSITORIES:-null}"
+          observed="${OBSERVED_REPOSITORIES:-null}"
+          scope_ok="${SCOPE_OK:-null}"
           if test "$JOB_STATUS" = success; then
             run_success=1
             last_success="$now"
@@ -179,8 +180,21 @@ jobs:
             workflow_dispatch) trigger=manual ;;
             *) trigger=manual ;;
           esac
-          warning_count="$(gh api -X GET search/issues -f q="user:${GITHUB_REPOSITORY_OWNER} is:issue is:open label:renovate/config-error" --jq '.total_count' 2>/dev/null || printf '0')"
-          [[ "$warning_count" =~ ^[0-9]+$ ]] || warning_count=0
+          warning_count=null
+          if test "$scope_ok" = 1 && test -n "$EXPECTED_REPOSITORY_NAMES"; then
+            if warning_readback="$(
+              gh api -X GET search/issues --paginate \
+                -f q="user:${GITHUB_REPOSITORY_OWNER} is:issue is:open label:renovate/config-error" 2>/dev/null \
+                | jq -s --argjson expected "$EXPECTED_REPOSITORY_NAMES" '
+                    [.[].items[].repository_url
+                      | sub("^https://api.github.com/repos/"; "")
+                      | select(. as $repository | $expected | index($repository))]
+                    | length
+                  '
+            )" && [[ "$warning_readback" =~ ^[0-9]+$ ]]; then
+              warning_count="$warning_readback"
+            fi
+          fi
           timestamp_ns="${now}000000000"
 
           payload="$(jq -n \
@@ -207,12 +221,14 @@ jobs:
                   resource(([
                     gauge("ternforge_update_processing_duration_seconds"; $total; trigger_attributes),
                     gauge("ternforge_update_queue_delay_seconds"; $queue; trigger_attributes),
-                    gauge("ternforge_update_run_success"; $success; trigger_attributes),
+                    gauge("ternforge_update_run_success"; $success; trigger_attributes)
+                  ] + (if $expected != null and $observed != null and $scopeOk != null then [
                     gauge("ternforge_fleet_expected_repositories"; $expected; []),
                     gauge("ternforge_fleet_observed_repositories"; $observed; []),
-                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk; []),
+                    gauge("ternforge_fleet_token_scope_ok"; $scopeOk; [])
+                  ] else [] end) + (if $warnings != null then [
                     gauge("ternforge_renovate_configuration_warnings"; $warnings; [])
-                  ] + (if $lastSuccess != null then [
+                  ] else [] end) + (if $lastSuccess != null then [
                     gauge("ternforge_update_last_success_unixtime"; $lastSuccess; [])
                   ] else [] end)))
                 ]
