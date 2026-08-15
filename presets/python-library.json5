@@ -23,22 +23,10 @@
       "enabled": false
     },
     {
-      "description": "Group Ternforge Python tooling Git dependencies",
+      "description": "Template-managed Ternforge Python tooling updates through Copier",
       "matchManagers": ["pep621"],
       "matchDepNames": ["py-lib-runtime", "py-lib-policy", "py-lib-testkit"],
-      "groupName": "Ternforge Python tooling"
-    },
-    {
-      "description": "Runtime dependency changes are product fixes",
-      "matchManagers": ["pep621"],
-      "matchDepNames": ["py-lib-runtime"],
-      "semanticCommitType": "fix"
-    },
-    {
-      "description": "Policy and testkit dependency changes are maintenance",
-      "matchManagers": ["pep621"],
-      "matchDepNames": ["py-lib-policy", "py-lib-testkit"],
-      "semanticCommitType": "chore"
+      "enabled": false
     }
   ]
 }
