@@ -82,7 +82,7 @@ module.exports = {
     {
       customType: "regex",
       description: "uv required execution version",
-      managerFilePatterns: ["/(^|/)pyproject-uv\\.toml$/"],
+      managerFilePatterns: ["/(^|/)components/quality/py/includes/uv/pyproject\\.toml$/"],
       matchStrings: ["required-version\\s*=\\s*\"==(?<currentValue>\\d+\\.\\d+\\.\\d+)\""],
       depNameTemplate: "astral-sh/uv",
       datasourceTemplate: "github-releases",
