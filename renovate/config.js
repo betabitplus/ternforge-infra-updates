@@ -16,6 +16,15 @@ module.exports = {
     GIT_CONFIG_KEY_0: "url.https://x-access-token:{{ secrets.SOURCE_READ_TOKEN }}@github.com/.insteadOf",
     GIT_CONFIG_VALUE_0: "https://github.com/",
   },
+  customDatasources: {
+    "github-runner-release-assets": {
+      defaultRegistryUrlTemplate: "https://api.github.com/repos/actions/runner/releases?per_page=100",
+      format: "json",
+      transformTemplates: [
+        '({"releases": $map($filter($, function($r) { $type($r.assets[name = "actions-runner-linux-arm64-" & $substring($r.tag_name, 1) & ".tar.gz"][0].digest) = "string" }), function($r) { ( $v := $substring($r.tag_name, 1); $a := $r.assets[name = "actions-runner-linux-arm64-" & $v & ".tar.gz"][0]; {"version": $v, "digest": $substringAfter($a.digest, "sha256:"), "releaseTimestamp": $r.published_at} ) })})',
+      ],
+    },
+  },
   allowedCommands: [
     "^python -c \\\"import os,tomllib; v=tomllib\\.load\\(open\\('pyproject\\.toml','rb'\\)\\)\\['tool'\\]\\['uv'\\]\\['required-version'\\]\\.removeprefix\\('=='\\); os\\.execvp\\('install-tool',\\['install-tool','uv',v\\]\\)\\\"$",
     "^uv lock$",
@@ -89,6 +98,18 @@ module.exports = {
       depNameTemplate: "astral-sh/uv",
       datasourceTemplate: "github-releases",
       versioningTemplate: "semver",
+    },
+    {
+      customType: "regex",
+      description: "Local CI Actions runner archive",
+      managerFilePatterns: ["/(^|/)local-ci/versions\\.env$/"],
+      matchStrings: [
+        "RUNNER_VERSION=(?<currentValue>[^\\s]+)\\s+RUNNER_SHA256=(?<currentDigest>[a-f0-9]{64})",
+      ],
+      depNameTemplate: "actions/runner",
+      datasourceTemplate: "custom.github-runner-release-assets",
+      versioningTemplate: "semver",
+      autoReplaceStringTemplate: "RUNNER_VERSION={{newValue}}\\nRUNNER_SHA256={{newDigest}}",
     },
     {
       customType: "regex",
