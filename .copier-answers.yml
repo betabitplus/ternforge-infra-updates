@@ -1,5 +1,5 @@
 # This file is managed by Copier.
-_commit: v1.2.3
+_commit: v1.3.0
 _src_path: https://github.com/betabitplus/ternforge-template-infra-repository.git
 repository_description: Full-fleet update delivery for Ternforge repositories.
 repository_name: ternforge-infra-updates
