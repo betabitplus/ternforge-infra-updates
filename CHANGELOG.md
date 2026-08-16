@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.4...v0.3.5) (2026-08-16)
+
+
+### Bug Fixes
+
+* pin local runner release asset ([#96](https://github.com/betabitplus/ternforge-infra-updates/issues/96)) ([2bddc7c](https://github.com/betabitplus/ternforge-infra-updates/commit/2bddc7c808b175c736f02a1f9bba969653978fd0))
+* preserve authoritative fleet health ([#94](https://github.com/betabitplus/ternforge-infra-updates/issues/94)) ([f3296b3](https://github.com/betabitplus/ternforge-infra-updates/commit/f3296b3b1d86819c7e164027a1393f279d7aab8d))
+* report current fleet health ([#92](https://github.com/betabitplus/ternforge-infra-updates/issues/92)) ([b4735f4](https://github.com/betabitplus/ternforge-infra-updates/commit/b4735f4ebd3355766373ac85795377946aecb5a9))
+
 ## [0.3.4](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.3...v0.3.4) (2026-08-15)
 
 
