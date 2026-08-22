@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.6](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.5...v0.3.6) (2026-08-22)
+
+
+### Bug Fixes
+
+* allow private reconcile run lookup ([#106](https://github.com/betabitplus/ternforge-infra-updates/issues/106)) ([999ae1b](https://github.com/betabitplus/ternforge-infra-updates/commit/999ae1b05daf6b6f997093d4bcab27e83384f14c))
+
 ## [0.3.5](https://github.com/betabitplus/ternforge-infra-updates/compare/v0.3.4...v0.3.5) (2026-08-16)
 
 
