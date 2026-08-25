@@ -33,7 +33,7 @@ module.exports = {
   ],
   constraints: {
     copier: "9.17.2",
-    vendir: "0.46.0",
+    vendir: "0.46.1",
   },
   customManagers: [
     {
