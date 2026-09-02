@@ -32,7 +32,7 @@ module.exports = {
     "^tofu init -backend=false -input=false -upgrade$",
   ],
   constraints: {
-    copier: "9.17.2",
+    copier: "9.18.1",
     vendir: "0.46.0",
   },
   customManagers: [
