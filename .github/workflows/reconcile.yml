@@ -132,7 +132,7 @@ jobs:
         with:
           configurationFile: renovate/config.js
           token: ${{ steps.renovate-token.outputs.token }}
-          renovate-version: 44.39.1@sha256:00699dedb6d44bf645e3f0a98729bcdb660a660f1952a53d9592d3a127088b11
+          renovate-version: 44.82.4@sha256:adb2681fadf872ad76d777870b2e3fdda1b009e406ed67d7dd1b0f10654d4892
           env-regex: '^(?:RENOVATE_\w+|LOG_LEVEL|GITHUB_COM_TOKEN|NODE_OPTIONS|NO_COLOR|(?:HTTPS?|NO)_PROXY|(?:https?|no)_proxy)$'
 
       - name: Export bounded Fleet Health metrics
