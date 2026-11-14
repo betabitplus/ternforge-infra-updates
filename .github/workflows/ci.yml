@@ -48,7 +48,7 @@ jobs:
           docker run --rm \
             -v "$PWD:/repo" \
             -w /repo \
-            ghcr.io/renovatebot/renovate:44.39.1@sha256:00699dedb6d44bf645e3f0a98729bcdb660a660f1952a53d9592d3a127088b11 \
+            ghcr.io/renovatebot/renovate:44.239.1@sha256:7dba1a3b916a2cf302ba0df458ddcc8fcbac3c92d0fe9882ac13ba0363de656b \
             renovate-config-validator --strict \
             renovate/config.js presets/python-library.json5
 
